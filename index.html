@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Praxis Score</title>
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#366c91">
+<meta name="theme-color" content="#f3f6f9">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Praxis Score">
@@ -53,22 +53,27 @@ body{
   font-family:"Asap", "Segoe UI", Roboto, system-ui, -apple-system, sans-serif;
   font-size:17px; line-height:1.4; -webkit-tap-highlight-color:transparent;
 }
-body::before{ content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px); z-index:10; background:var(--head1); }
+body::before{ content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px); z-index:10; background:var(--bg); }
 button{ font:inherit; color:inherit; border:0; background:none; cursor:pointer; touch-action:manipulation; }
 button:focus-visible, input:focus-visible, textarea:focus-visible{ outline:3px solid var(--tmk-hellblau); outline-offset:2px; }
 .wrap{ max-width:520px; margin:0 auto; padding:0 12px 100px; }
 
 /* Kopfleiste: Blau-Verlauf mit angeschnittenem Fingerabdruck-Bogen */
 header{
-  position:sticky; top:env(safe-area-inset-top,0px); z-index:5; overflow:hidden;
-  background:linear-gradient(120deg, var(--head1) 0%, var(--head2) 75%, var(--head2) 100%);
-  color:#fff; margin:0 -12px; padding:10px 14px; display:flex; align-items:center; gap:12px;
+  position:sticky; top:env(safe-area-inset-top,0px); z-index:5;
+  margin:0 -12px; padding:8px 12px 0; background:var(--bg);
 }
-header::after{
+header .bar{
+  position:relative; overflow:hidden; border-radius:16px;
+  background:linear-gradient(120deg, var(--head1) 0%, var(--head2) 75%, var(--head2) 100%);
+  color:#fff; padding:7px 10px 7px 12px; display:flex; align-items:center; gap:10px;
+  box-shadow:0 2px 8px rgba(0,50,76,.12);
+}
+header .bar::after{
   content:""; position:absolute; right:-46px; top:-38px; width:150px; height:140px;
   background:url(bogen.svg) no-repeat center/contain; opacity:.12; pointer-events:none;
 }
-.logo{ height:34px; width:auto; flex:none; position:relative; z-index:1; }
+.logo{ height:30px; width:auto; flex:none; position:relative; z-index:1; }
 .sess{ flex:1; min-width:0; text-align:left; padding:2px 0; color:#fff; position:relative; z-index:1; border-left:1px solid rgba(255,255,255,.3); padding-left:12px; }
 .sess b{ display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; font-size:16px; font-weight:700; line-height:1.2; overflow-wrap:anywhere; }
 .sess span{ display:block; color:rgba(255,255,255,.75); font-size:13px; margin-top:1px; }
@@ -84,19 +89,19 @@ header::after{
 
 /* Erfassen */
 .editbar{
-  display:flex; align-items:center; gap:8px; margin-top:12px; padding:8px 8px 8px 14px;
-  background:var(--tmk-dunkelblau); color:#fff; border-radius:14px; font-size:15px;
+  display:flex; align-items:center; gap:6px; margin-top:8px; padding:5px 5px 5px 12px;
+  background:var(--tmk-dunkelblau); color:#fff; border-radius:16px; font-size:15px;
 }
 .editbar span{ flex:1; min-width:0; }
 .editbar button{ color:#fff; padding:6px 8px; font-weight:700; font-size:13px; text-transform:uppercase; letter-spacing:.03em; }
 .editbar button.arm{ color:#ffc9c8; }
-.editbar button.new{ background:var(--cta); color:var(--cta-ink); border-radius:999px; padding:9px 14px; }
+.editbar button.new{ background:var(--cta); color:var(--cta-ink); border-radius:999px; padding:8px 12px; }
 .editbar button.new.arm{ background:var(--lame); color:var(--okI); }
-.idrow{ display:flex; gap:8px; margin-top:12px; }
-.field{ flex:1; display:block; background:var(--surface); border:2px solid var(--line); border-radius:14px; padding:6px 14px 8px; }
+.idrow{ display:flex; gap:8px; margin-top:8px; }
+.field{ flex:1; display:block; background:var(--surface); border:2px solid var(--line); border-radius:14px; padding:4px 14px 5px; }
 .field small{ display:block; color:var(--muted); font-size:13px; }
 .field input, .field textarea{ width:100%; border:0; background:none; color:var(--ink); font:inherit; padding:0; outline:none; resize:none; }
-#tierId{ font-size:26px; font-weight:700; height:36px; }
+#tierId{ font-size:24px; font-weight:700; height:32px; }
 #note{ font-size:17px; min-height:26px; }
 .field:focus-within{ border-color:var(--accent); }
 .field.known{ border-color:var(--sus); }
@@ -104,23 +109,26 @@ header::after{
 .mode button{ flex:1; font-weight:700; font-size:15px; color:var(--muted); }
 .mode button + button{ border-top:2px solid var(--line); }
 .mode button[aria-pressed="true"]{ background:var(--accent); color:var(--accent-ink); }
-.hint{ font-size:14px; color:var(--muted); min-height:20px; margin:6px 2px 0; }
-.sugg{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
-.notewrap{ margin-top:8px; }
+.hint{ font-size:14px; color:var(--muted); margin:4px 2px 0; line-height:1.3; }
+.hint:empty{ display:none; }
+.sugg{ display:flex; gap:6px; margin-top:6px; overflow-x:auto; scrollbar-width:none; }
+.sugg:empty{ display:none; }
+.sugg .chip{ flex:none; }
+.notewrap{ margin-top:12px; }
 
-.scores{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:12px; }
+.scores{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:8px; }
 .sc{
-  border-radius:18px; padding:8px 4px 12px; display:flex; flex-direction:column; align-items:center; gap:2px;
-  min-height:104px; font-weight:700; font-size:16px; transition:transform .08s; border:3px solid transparent;
+  border-radius:18px; padding:6px 4px 8px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0;
+  min-height:80px; font-weight:700; font-size:16px; transition:transform .08s; border:3px solid transparent;
 }
 .sc:active{ transform:scale(.97); }
-.sc svg{ width:54px; height:34px; }
+.sc svg{ width:46px; height:29px; }
 .sc.ok{ background:var(--ok); color:var(--okI); }
 .sc.sus{ background:var(--sus); color:var(--susI); }
 .sc.lame{ background:var(--lame); color:var(--lameI); }
 .sc.cur{ border-color:var(--tmk-dunkelblau); box-shadow:0 0 0 2px #fff inset; }
 .later{
-  width:100%; margin-top:8px; height:48px; border-radius:999px; border:2px dashed var(--open); color:var(--ink);
+  width:100%; margin-top:8px; height:44px; border-radius:999px; border:2px dashed var(--open); color:var(--ink);
   font-weight:700; font-size:14px; text-transform:uppercase; letter-spacing:.04em; background:var(--surface);
 }
 .later.cur{ border-style:solid; background:var(--key); }
@@ -185,6 +193,7 @@ label.f input{ display:block; width:100%; margin-top:4px; height:46px; border-ra
 .foerder p{ margin:0 0 8px; font-size:12px; color:#5d7385; }
 .foerder img{ display:block; width:100%; height:auto; }
 
+body.typing nav{ display:none; }
 nav{
   position:fixed; left:0; right:0; bottom:0; z-index:6; background:var(--surface); border-top:1px solid var(--line);
   padding-bottom:env(safe-area-inset-bottom,0px); display:flex; justify-content:center;
@@ -201,6 +210,8 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
   opacity:0; pointer-events:none; transition:opacity .15s; box-shadow:0 6px 20px rgba(0,40,60,.25);
 }
 .toast span{ flex:1; }
+/* Beim Tippen liegt unten die Tastatur: Hinweis über der Kopfleiste zeigen */
+body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
 .toast.show{ opacity:1; pointer-events:auto; }
 .toast button{ color:var(--tmk-hellblau); font-weight:700; font-size:13px; text-transform:uppercase; letter-spacing:.04em; padding:8px 10px; }
 [hidden]{ display:none !important; }
@@ -209,14 +220,13 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
 </head>
 <body>
 <div class="wrap">
-  <header>
+  <header><div class="bar">
     <img class="logo" src="logo-tmk.svg" alt="Telemedizin Klaue">
     <button class="sess" id="sessBtn" aria-label="Erfassung wechseln">
       <b id="sessName">Keine Erfassung</b>
       <span id="sessSub">Tippen, um einen anzulegen</span>
     </button>
-    <button class="sync" id="expState" aria-label="Export-Status"><span class="dot" id="syncDot"></span><span id="syncTxt"></span></button>
-  </header>
+  </div></header>
 
   <!-- Erfassen -->
   <section id="v-erfassen">
@@ -228,7 +238,7 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
     <div class="idrow">
       <label class="field" id="idField">
         <small>Tier-ID (Halsband, LOM oder Beschreibung)</small>
-        <input id="tierId" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="next">
+        <input id="tierId" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done">
       </label>
       <div class="mode" id="mode" role="group" aria-label="Tastatur">
         <button data-m="text" aria-pressed="true" aria-label="Buchstaben-Tastatur">abc</button>
@@ -237,12 +247,12 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
     </div>
     <div class="sugg" id="sugg"></div>
     <div class="hint" id="hint"></div>
-    <label class="field notewrap">
-      <small>Bemerkung (optional)</small>
-      <textarea id="note" rows="1" enterkeyhint="done"></textarea>
-    </label>
     <div class="scores" id="scores"></div>
     <button class="later" id="later">Später beurteilen</button>
+    <label class="field notewrap">
+      <small>Bemerkung (optional, vor der Beurteilung eintragen)</small>
+      <textarea id="note" rows="1" enterkeyhint="done"></textarea>
+    </label>
 
     <div class="block" id="openBlock" hidden>
       <h2 id="openH">Noch offen</h2>
@@ -259,7 +269,7 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
     <div class="panel">
       <div class="kpis">
         <div class="k" style="border-color:var(--ok)"><b id="kOk">0</b><span>nicht lahm</span></div>
-        <div class="k" style="border-color:var(--sus)"><b id="kSus">0</b><span>verdächtig</span></div>
+        <div class="k" style="border-color:var(--sus)"><b id="kSus">0</b><span>unklar</span></div>
         <div class="k" style="border-color:var(--lame)"><b id="kLame">0</b><span>lahm</span></div>
         <div class="k" style="border-color:var(--open)"><b id="kOpen">0</b><span>offen</span></div>
       </div>
@@ -271,7 +281,7 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
         <button data-f="all" aria-pressed="true">Alle</button>
         <button data-f="open" aria-pressed="false">Offen</button>
         <button data-f="ok" aria-pressed="false">nicht lahm</button>
-        <button data-f="sus" aria-pressed="false">verdächtig</button>
+        <button data-f="sus" aria-pressed="false">unklar</button>
         <button data-f="lame" aria-pressed="false">lahm</button>
       </div>
       <input class="search" id="search" type="search" placeholder="Tier suchen" autocomplete="off">
@@ -324,7 +334,7 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
 (function(){
   const CAT = {
     ok:   {label:"nicht lahm", arch:0},
-    sus:  {label:"verdächtig", arch:5},
+    sus:  {label:"unklar",     arch:5},
     lame: {label:"lahm",       arch:11}
   };
   const ORDER = ["ok","sus","lame"];
@@ -373,9 +383,6 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
   function updSyncLabel(){
     const s = curSess();
     const st = s ? exportState(s) : "empty";
-    $("syncDot").className = "dot " + (st === "ok" ? "ok" : st === "empty" ? "" : "err");
-    $("syncTxt").innerHTML = st === "ok" ? "Exportiert" : st === "empty" ? "" : "Nicht<br>exportiert";
-    $("expState").hidden = st === "empty";
     const h = $("expHint");
     if(h){
       h.textContent = !s || st === "empty" ? "" : st === "ok"
@@ -467,7 +474,7 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
     }
     renderEntry();
   });
-  idIn.addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); noteIn.focus(); } });
+  idIn.addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); idIn.blur(); } });
   noteIn.addEventListener("input", () => { noteTouched = true; autoGrow(); });
   noteIn.addEventListener("keydown", e => { if(e.key === "Enter" && !e.shiftKey){ e.preventDefault(); noteIn.blur(); } });
   function autoGrow(){ noteIn.style.height = "auto"; noteIn.style.height = Math.min(noteIn.scrollHeight, 140) + "px"; }
@@ -564,7 +571,7 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
     const judged = c.ok + c.sus + c.lame;
     $("share").innerHTML = judged ? ORDER.map(k => '<i style="width:'+(100*c[k]/judged)+'%;background:var(--'+k+')"></i>').join("") : "";
     $("shareTxt").textContent = judged
-      ? "Von " + judged + " beurteilten Tieren: " + pct(c.lame,judged) + " lahm, " + pct(c.sus,judged) + " verdächtig."
+      ? "Von " + judged + " beurteilten Tieren: " + pct(c.lame,judged) + " lahm, " + pct(c.sus,judged) + " unklar."
       : "Noch keine Beurteilungen.";
     const q = norm($("search").value);
     const list = recs.filter(r => (filter === "all" || (r.score || "open") === filter) && (!q || norm(r.tier).includes(q) || norm(r.note).includes(q))).sort(natSort);
@@ -595,8 +602,8 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
       rs.forEach(r => c[r.score || "open"]++);
       const j = c.ok + c.sus + c.lame;
       return {"Betrieb": s.farm, "Gruppe": s.group, "Datum": fmtDate(s.date), "Tiere gesamt": rs.length,
-        "nicht lahm": c.ok, "verdächtig": c.sus, "lahm": c.lame, "nicht beurteilt": c.open,
-        "Anteil lahm (%)": j ? Math.round(1000*c.lame/j)/10 : "", "Anteil verdächtig (%)": j ? Math.round(1000*c.sus/j)/10 : ""};
+        "nicht lahm": c.ok, "unklar": c.sus, "lahm": c.lame, "nicht beurteilt": c.open,
+        "Anteil lahm (%)": j ? Math.round(1000*c.lame/j)/10 : "", "Anteil unklar (%)": j ? Math.round(1000*c.sus/j)/10 : ""};
     });
     const ws2 = XLSX.utils.json_to_sheet(sum);
     ws2["!cols"] = [{wch:20},{wch:20},{wch:11},{wch:12},{wch:11},{wch:11},{wch:8},{wch:15},{wch:16},{wch:20}];
@@ -713,9 +720,13 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
     renderSessions(); renderEntry(); renderLists(); renderTiere(); updSyncLabel();
   }
 
+  document.addEventListener("focusin", e => { if(e.target.matches("input, textarea")) document.body.classList.add("typing"); });
+  document.addEventListener("focusout", () => setTimeout(() => {
+    const a = document.activeElement;
+    if(!a || !a.matches || !a.matches("input, textarea")) document.body.classList.remove("typing");
+  }, 50));
   applyMode(); resetForm(); renderAll();
   if(!curSess()) show("durchgaenge");
-  $("expState").addEventListener("click", () => show("tiere"));
   if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(()=>{});
   if("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(()=>{});
 })();

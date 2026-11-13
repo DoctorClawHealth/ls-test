@@ -1,5 +1,5 @@
 // Offline-Cache für die Lahmheits-App. Bei Änderungen VERSION erhöhen.
-const VERSION = "tmk-lahmheit-v7";
+const VERSION = "tmk-lahmheit-v10";
 const FILES = ["./", "index.html", "xlsx.full.min.js", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png", "logo-tmk.svg", "bogen.svg", "asap-latin.woff2"];
 const OPTIONAL = ["foerderleiste.jpg"];
 
