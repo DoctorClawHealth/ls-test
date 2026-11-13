@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Locomotion-Score</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#2F6B4F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Lahmheit">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E9EEE8; --surface:#F7F9F5; --ink:#1C2A21; --muted:#5B6B60; --line:#C9D3C9;
+  --accent:#2F6B4F; --accent-ink:#FFFFFF; --key:#DDE5DC;
+  --ok:#3E8E5A; --okI:#FFFFFF; --sus:#E3AE2A; --susI:#1C2A21; --lame:#B8372F; --lameI:#FFFFFF;
+  --open:#7A8A80;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#121815; --surface:#1B231E; --ink:#E6EDE7; --muted:#9AAA9F; --line:#2E3A33;
+    --accent:#6FBF95; --accent-ink:#0E1A13; --key:#25302A; --open:#8E9C93;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#121815; --surface:#1B231E; --ink:#E6EDE7; --muted:#9AAA9F; --line:#2E3A33;
+  --accent:#6FBF95; --accent-ink:#0E1A13; --key:#25302A; --open:#8E9C93;
+  color-scheme: dark;
+}
+:root{ box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); }
+*,*::before,*::after{ box-sizing:inherit; }
+html{ scroll-padding-top:env(safe-area-inset-top,0px); }
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size:17px; line-height:1.4; -webkit-tap-highlight-color:transparent;
+}
+body::before{ content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px); z-index:10; background:var(--surface); }
+button{ font:inherit; color:inherit; border:0; background:none; cursor:pointer; touch-action:manipulation; }
+button:focus-visible, input:focus-visible, textarea:focus-visible{ outline:3px solid var(--accent); outline-offset:2px; }
+.wrap{ max-width:520px; margin:0 auto; padding:0 12px 100px; }
+
+header{
+  position:sticky; top:env(safe-area-inset-top,0px); z-index:5; background:var(--surface);
+  border-bottom:1px solid var(--line); margin:0 -12px; padding:10px 14px;
+  display:flex; align-items:center; gap:10px;
+}
+.sess{ flex:1; min-width:0; text-align:left; padding:2px 0; }
+.sess b{ display:block; font-size:18px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sess span{ color:var(--muted); font-size:14px; }
+.sync{ font-size:13px; color:var(--muted); display:flex; align-items:center; gap:6px; white-space:nowrap; }
+.dot{ width:9px; height:9px; border-radius:50%; background:var(--muted); }
+.exphint{ font-size:14px; margin-top:8px; }
+.exphint.warn{ color:var(--lame); font-weight:700; }
+.srow .warn{ color:var(--lame); }
+.dot.ok{ background:var(--ok); } .dot.wait{ background:var(--sus); } .dot.err{ background:var(--lame); }
+
+/* Erfassen */
+.editbar{
+  display:flex; align-items:center; gap:8px; margin-top:12px; padding:8px 8px 8px 12px;
+  background:var(--ink); color:var(--surface); border-radius:10px; font-size:15px;
+}
+.editbar span{ flex:1; min-width:0; }
+.editbar button{ color:var(--surface); padding:6px 8px; font-weight:700; }
+.editbar button.arm{ color:#FFB4AE; }
+.idrow{ display:flex; gap:8px; margin-top:12px; }
+.field{
+  flex:1; display:block; background:var(--surface); border:2px solid var(--line); border-radius:12px; padding:6px 12px 8px;
+}
+.field small{ display:block; color:var(--muted); font-size:13px; }
+.field input, .field textarea{
+  width:100%; border:0; background:none; color:var(--ink); font:inherit; padding:0; outline:none; resize:none;
+}
+#tierId{ font-size:26px; font-weight:700; height:36px; }
+#note{ font-size:17px; min-height:26px; }
+.field:focus-within{ border-color:var(--accent); }
+.field.known{ border-color:var(--sus); }
+.modeBtn{ width:64px; border-radius:12px; background:var(--key); font-weight:700; font-size:15px; }
+.hint{ font-size:14px; color:var(--muted); min-height:20px; margin:6px 2px 0; }
+.sugg{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+.notewrap{ margin-top:8px; }
+
+.scores{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:12px; }
+.sc{
+  border-radius:12px; padding:8px 4px 10px; display:flex; flex-direction:column; align-items:center; gap:2px;
+  min-height:100px; font-weight:700; font-size:17px; transition:transform .08s; border:3px solid transparent;
+}
+.sc:active{ transform:scale(.97); }
+.sc svg{ width:54px; height:34px; }
+.sc.ok{ background:var(--ok); color:var(--okI); }
+.sc.sus{ background:var(--sus); color:var(--susI); }
+.sc.lame{ background:var(--lame); color:var(--lameI); }
+.sc.cur{ border-color:var(--ink); box-shadow:0 0 0 2px var(--surface) inset; }
+.later{
+  width:100%; margin-top:8px; height:48px; border-radius:12px; border:2px dashed var(--open); color:var(--ink); font-weight:700;
+}
+.later.cur{ border-style:solid; background:var(--key); }
+
+.block{ margin-top:18px; }
+.block h2, .panel h2{ font-size:15px; color:var(--muted); font-weight:400; margin:0 0 8px; }
+.chips{ display:flex; flex-wrap:wrap; gap:6px; }
+.chip{
+  display:inline-flex; align-items:center; gap:6px; background:var(--surface); border:1px solid var(--line);
+  border-radius:999px; padding:4px 12px 4px 4px; font-size:15px; max-width:100%;
+}
+.chip span{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.pill{ flex:none; width:24px; height:24px; border-radius:50%; display:inline-block; }
+.pill.ok{ background:var(--ok); } .pill.sus{ background:var(--sus); } .pill.lame{ background:var(--lame); }
+.pill.open{ background:none; border:2px dashed var(--open); }
+.chip.openchip{ border:2px dashed var(--open); padding-left:12px; font-weight:700; }
+
+/* Tiere */
+.panel{ background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:14px; margin-top:14px; }
+.kpis{ display:grid; grid-template-columns:repeat(4,1fr); gap:6px; text-align:center; }
+.kpis b{ display:block; font-size:26px; font-variant-numeric:tabular-nums; }
+.kpis span{ font-size:13px; color:var(--muted); }
+.kpis .k{ border-top:5px solid; padding-top:6px; }
+.share{ margin-top:10px; height:14px; border-radius:7px; overflow:hidden; display:flex; background:var(--key); }
+.share i{ display:block; height:100%; }
+.filters{ display:flex; gap:6px; overflow-x:auto; padding-bottom:2px; }
+.filters button{ flex:none; height:38px; padding:0 14px; border-radius:999px; border:2px solid var(--line); font-size:15px; }
+.filters button[aria-pressed="true"]{ background:var(--ink); color:var(--surface); border-color:var(--ink); }
+.search{ margin-top:10px; width:100%; height:44px; border-radius:10px; border:2px solid var(--line); background:var(--bg); color:var(--ink); font:inherit; padding:0 12px; }
+.row{ display:flex; gap:12px; align-items:center; width:100%; text-align:left; padding:10px 0; border-top:1px solid var(--line); }
+.list .row:first-child{ border-top:0; }
+.row .pill{ width:28px; height:28px; }
+.row .info{ flex:1; min-width:0; }
+.row .info b{ display:block; overflow-wrap:anywhere; }
+.row .info span{ display:block; color:var(--muted); font-size:14px; overflow-wrap:anywhere; }
+.row .go{ color:var(--muted); font-size:14px; }
+.btn{ display:inline-flex; align-items:center; justify-content:center; height:46px; padding:0 18px; border-radius:10px; font-weight:700; }
+.btn.primary{ background:var(--accent); color:var(--accent-ink); }
+.btn.ghost{ border:2px solid var(--line); }
+.actions{ display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+.empty{ color:var(--muted); padding:6px 0; }
+
+/* Durchgänge */
+.srow{ display:flex; align-items:center; gap:8px; padding:10px 0; border-top:1px solid var(--line); flex-wrap:wrap; }
+.srow:first-child{ border-top:0; }
+.srow .info{ flex:1 1 180px; min-width:0; }
+.srow .info b{ display:block; overflow-wrap:anywhere; }
+.srow .info span{ color:var(--muted); font-size:14px; }
+.srow .tag{ color:var(--accent); font-size:14px; font-weight:700; }
+.srow .lnk{ color:var(--muted); font-size:14px; padding:6px 8px; }
+.srow .lnk.arm{ color:var(--lame); font-weight:700; }
+label.f{ display:block; margin-top:10px; font-size:14px; color:var(--muted); }
+label.f input{ display:block; width:100%; margin-top:4px; height:46px; border-radius:10px; border:2px solid var(--line); background:var(--bg); color:var(--ink); font:inherit; padding:0 12px; }
+
+nav{
+  position:fixed; left:0; right:0; bottom:0; z-index:6; background:var(--surface); border-top:1px solid var(--line);
+  padding-bottom:env(safe-area-inset-bottom,0px); display:flex; justify-content:center;
+}
+nav .in{ display:grid; grid-template-columns:repeat(3,1fr); max-width:520px; width:100%; }
+nav button{ height:58px; font-size:15px; color:var(--muted); border-top:3px solid transparent; }
+nav button[aria-current="page"]{ color:var(--ink); font-weight:700; border-top-color:var(--accent); }
+nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:10px; background:var(--open); color:var(--surface); font-size:12px; font-weight:700; margin-left:4px; }
+
+.toast{
+  position:fixed; left:50%; transform:translateX(-50%); bottom:calc(70px + env(safe-area-inset-bottom,0px)); z-index:20;
+  background:var(--ink); color:var(--surface); border-radius:12px; padding:10px 10px 10px 16px;
+  display:flex; align-items:center; gap:12px; max-width:calc(100% - 24px); font-size:16px;
+  opacity:0; pointer-events:none; transition:opacity .15s;
+}
+.toast.show{ opacity:1; pointer-events:auto; }
+.toast button{ color:var(--surface); font-weight:700; text-decoration:underline; padding:6px 8px; }
+[hidden]{ display:none !important; }
+@media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <button class="sess" id="sessBtn" aria-label="Durchgang wechseln">
+      <b id="sessName">Kein Durchgang</b>
+      <span id="sessSub">Tippen, um einen anzulegen</span>
+    </button>
+    <button class="sync" id="expState" aria-label="Export-Status"><span class="dot" id="syncDot"></span><span id="syncTxt"></span></button>
+  </header>
+
+  <!-- Erfassen -->
+  <section id="v-erfassen">
+    <div class="editbar" id="editBar" hidden>
+      <span id="editTxt"></span>
+      <button id="editDel">Löschen</button>
+      <button id="editCancel">Fertig</button>
+    </div>
+    <div class="idrow">
+      <label class="field" id="idField">
+        <small>Tier-ID (Halsband, LOM oder Beschreibung)</small>
+        <input id="tierId" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="next">
+      </label>
+      <button class="modeBtn" id="modeBtn" aria-label="Tastatur umschalten">123</button>
+    </div>
+    <div class="sugg" id="sugg"></div>
+    <div class="hint" id="hint"></div>
+    <label class="field notewrap">
+      <small>Bemerkung (optional)</small>
+      <textarea id="note" rows="1" enterkeyhint="done"></textarea>
+    </label>
+    <div class="scores" id="scores"></div>
+    <button class="later" id="later">Später beurteilen</button>
+
+    <div class="block" id="openBlock" hidden>
+      <h2 id="openH">Noch offen</h2>
+      <div class="chips" id="openList"></div>
+    </div>
+    <div class="block">
+      <h2 id="recentH">Zuletzt erfasst</h2>
+      <div class="chips" id="recent"></div>
+    </div>
+  </section>
+
+  <!-- Tiere -->
+  <section id="v-tiere" hidden>
+    <div class="panel">
+      <div class="kpis">
+        <div class="k" style="border-color:var(--ok)"><b id="kOk">0</b><span>nicht lahm</span></div>
+        <div class="k" style="border-color:var(--sus)"><b id="kSus">0</b><span>verdächtig</span></div>
+        <div class="k" style="border-color:var(--lame)"><b id="kLame">0</b><span>lahm</span></div>
+        <div class="k" style="border-color:var(--open)"><b id="kOpen">0</b><span>offen</span></div>
+      </div>
+      <div class="share" id="share"></div>
+      <div class="hint" id="shareTxt"></div>
+    </div>
+    <div class="panel">
+      <div class="filters" id="filters">
+        <button data-f="all" aria-pressed="true">Alle</button>
+        <button data-f="open" aria-pressed="false">Offen</button>
+        <button data-f="ok" aria-pressed="false">nicht lahm</button>
+        <button data-f="sus" aria-pressed="false">verdächtig</button>
+        <button data-f="lame" aria-pressed="false">lahm</button>
+      </div>
+      <input class="search" id="search" type="search" placeholder="Tier suchen" autocomplete="off">
+      <div class="list" id="list" style="margin-top:6px"></div>
+    </div>
+    <div class="panel">
+      <h2>Excel-Export</h2>
+      <div class="actions" style="margin-top:0">
+        <button class="btn primary" id="expCur">Diesen Durchgang</button>
+        <button class="btn ghost" id="expAll">Alle Durchgänge</button>
+      </div>
+      <div class="exphint" id="expHint"></div>
+    </div>
+  </section>
+
+  <!-- Durchgänge -->
+  <section id="v-durchgaenge" hidden>
+    <div class="panel">
+      <h2 id="formH">Neuer Durchgang</h2>
+      <label class="f">Betrieb<input id="fFarm" autocomplete="off"></label>
+      <label class="f">Gruppe<input id="fGroup" autocomplete="off" placeholder="z. B. Laktierende, Stall Nord"></label>
+      <label class="f">Datum<input id="fDate" type="date"></label>
+      <div class="actions">
+        <button class="btn primary" id="saveSess">Durchgang anlegen</button>
+        <button class="btn ghost" id="cancelSess" hidden>Abbrechen</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Alle Durchgänge</h2>
+      <div id="sessList"></div>
+    </div>
+  </section>
+</div>
+
+<nav><div class="in">
+  <button data-view="erfassen" aria-current="page">Erfassen</button>
+  <button data-view="tiere">Tiere<span class="badge" id="navBadge" hidden></span></button>
+  <button data-view="durchgaenge">Durchgänge</button>
+</div></nav>
+
+<div class="toast" id="toast" role="status"><span id="toastTxt"></span><button id="toastUndo">Rückgängig</button></div>
+
+<script src="xlsx.full.min.js"></script>
+<script>
+(function(){
+  const CAT = {
+    ok:   {label:"nicht lahm", arch:0},
+    sus:  {label:"verdächtig", arch:5},
+    lame: {label:"lahm",       arch:11}
+  };
+  const ORDER = ["ok","sus","lame"];
+  const $ = id => document.getElementById(id);
+  const catLabel = s => s ? CAT[s].label : "nicht beurteilt";
+  const pillCls = s => s || "open";
+
+  // ---------- Speicher ----------
+  function load(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } }
+  function save(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
+  const state = {
+    durchgaenge: load("lt-durchgaenge", []),
+    tiere: load("lt-tiere", []),
+    current: load("lt-current", null)
+  };
+  function persist(){
+    save("lt-durchgaenge", state.durchgaenge); save("lt-tiere", state.tiere);
+    save("lt-current", state.current);
+  }
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+  const live = arr => arr.filter(x => !x.del);
+  const curSess = () => state.durchgaenge.find(s => s.id === state.current && !s.del) || null;
+  const sessTiere = sid => live(state.tiere).filter(r => r.sid === sid);
+  const norm = s => String(s || "").trim().toLowerCase().replace(/\s+/g," ");
+  const natSort = (a,b) => a.tier.localeCompare(b.tier, "de", {numeric:true, sensitivity:"base"});
+
+  function touch(kind, item){
+    item.u = Date.now();
+    persist(); scheduleFlush();
+  }
+
+  // ---------- Export-Status ----------
+  function lastChange(sid){
+    let m = 0;
+    state.tiere.forEach(r => { if(r.sid === sid && (r.u||0) > m) m = r.u; });
+    return m;
+  }
+  function exportState(s){
+    const n = sessTiere(s.id).length;
+    const ch = lastChange(s.id);
+    if(!ch && !n) return "empty";
+    if(!s.exp) return "never";
+    return ch > s.exp ? "changed" : "ok";
+  }
+  const EXPTXT = {never:"noch nie exportiert", changed:"Änderungen seit Export", ok:"exportiert", empty:""};
+  function updSyncLabel(){
+    const s = curSess();
+    const st = s ? exportState(s) : "empty";
+    $("syncDot").className = "dot " + (st === "ok" ? "ok" : st === "empty" ? "" : "err");
+    $("syncTxt").textContent = st === "ok" ? "exportiert" : st === "empty" ? "" : "nicht exportiert";
+    $("expState").hidden = st === "empty";
+    const h = $("expHint");
+    if(h){
+      h.textContent = !s || st === "empty" ? "" : st === "ok"
+        ? "Zuletzt exportiert am " + fmtDT(s.exp) + "."
+        : (st === "never" ? "Dieser Durchgang wurde noch nie exportiert." : "Seit dem letzten Export (" + fmtDT(s.exp) + ") gab es Änderungen.") + " Die Daten liegen nur auf diesem Handy.";
+      h.className = "exphint" + (st === "ok" ? "" : " warn");
+    }
+  }
+  function scheduleFlush(){ updSyncLabel(); }
+
+  // ---------- Erfassen ----------
+  let editing = null;      // id des geöffneten Tiers
+  let locked = false;      // true = ausdrücklich geöffnet (ID-Änderung benennt um)
+  let noteTouched = false;
+  const idIn = $("tierId"), noteIn = $("note");
+
+  function cowSvg(arch, lame){
+    const y = 22, peak = y - 2*arch, head = 26 + arch*0.7;
+    const hind = lame ? '<path d="M48 22 L51 31"/>' : '<path d="M48 22 L48 36"/>';
+    return '<svg viewBox="0 0 64 40" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true">' +
+      '<path d="M8 '+y+' Q30 '+peak+' 52 '+y+'"/><path d="M52 '+y+' L60 '+head.toFixed(1)+'"/>' +
+      '<path d="M11 22 L11 36"/><path d="M17 23 L17 36"/><path d="M42 23 L42 36"/>' + hind + '</svg>';
+  }
+  $("scores").innerHTML = ORDER.map(k =>
+    '<button class="sc '+k+'" data-s="'+k+'">' + cowSvg(CAT[k].arch, k==="lame") + '<span>'+CAT[k].label+'</span></button>'
+  ).join("");
+
+  // Tastaturmodus
+  let numMode = load("lt-nummode", false);
+  function applyMode(){
+    idIn.setAttribute("inputmode", numMode ? "numeric" : "text");
+    $("modeBtn").textContent = numMode ? "abc" : "123";
+    $("modeBtn").setAttribute("aria-label", numMode ? "Auf Buchstaben-Tastatur umschalten" : "Auf Zahlen-Tastatur umschalten");
+  }
+  $("modeBtn").addEventListener("click", () => { numMode = !numMode; save("lt-nummode", numMode); applyMode(); idIn.blur(); idIn.focus(); });
+
+  function findByTier(sid, tier, exceptId){
+    const n = norm(tier); if(!n) return null;
+    return sessTiere(sid).find(r => norm(r.tier) === n && r.id !== exceptId) || null;
+  }
+  function editRec(){ return editing ? state.tiere.find(r => r.id === editing && !r.del) || null : null; }
+
+  function openRecord(id){
+    const r = state.tiere.find(x => x.id === id && !x.del); if(!r) return;
+    editing = r.id; locked = true; noteTouched = true;
+    idIn.value = r.tier; noteIn.value = r.note || "";
+    show("erfassen"); renderEntry(); autoGrow();
+  }
+  function closeEdit(){
+    editing = null; locked = false; noteTouched = false;
+    idIn.value = ""; noteIn.value = ""; autoGrow(); renderEntry();
+  }
+  $("editCancel").addEventListener("click", closeEdit);
+  $("editDel").addEventListener("click", e => {
+    const b = e.currentTarget, r = editRec(); if(!r) return;
+    if(!b.classList.contains("arm")){ b.classList.add("arm"); b.textContent = "Wirklich löschen?"; setTimeout(()=>{ b.classList.remove("arm"); b.textContent = "Löschen"; }, 3000); return; }
+    b.classList.remove("arm"); b.textContent = "Löschen";
+    r.del = true; touch("tiere", r);
+    toast("„" + r.tier + "“ gelöscht", () => { r.del = false; touch("tiere", r); renderAll(); });
+    closeEdit(); renderAll();
+  });
+
+  idIn.addEventListener("input", () => {
+    const sess = curSess();
+    if(!locked){
+      const m = sess ? findByTier(sess.id, idIn.value) : null;
+      editing = m ? m.id : null;
+      if(m && !noteTouched) noteIn.value = m.note || "";
+      if(!m && !noteTouched) noteIn.value = "";
+      autoGrow();
+    }
+    renderEntry();
+  });
+  idIn.addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); noteIn.focus(); } });
+  noteIn.addEventListener("input", () => { noteTouched = true; autoGrow(); });
+  noteIn.addEventListener("keydown", e => { if(e.key === "Enter" && !e.shiftKey){ e.preventDefault(); noteIn.blur(); } });
+  function autoGrow(){ noteIn.style.height = "auto"; noteIn.style.height = Math.min(noteIn.scrollHeight, 140) + "px"; }
+
+  function renderEntry(){
+    const sess = curSess(), r = editRec();
+    $("editBar").hidden = !(r && locked);
+    if(r && locked) $("editTxt").textContent = "„" + r.tier + "“ wird bearbeitet";
+    $("idField").classList.toggle("known", !!r && !locked);
+    let hint = "";
+    if(!sess) hint = "Zuerst einen Durchgang anlegen.";
+    else if(r && !locked) hint = "Schon erfasst: " + catLabel(r.score) + ". Neue Beurteilung ersetzt sie.";
+    else if(r && locked && norm(idIn.value) !== norm(r.tier)) hint = "Tier-ID wird beim Speichern geändert.";
+    $("hint").textContent = hint;
+    document.querySelectorAll(".sc").forEach(b => b.classList.toggle("cur", !!r && r.score === b.dataset.s));
+    $("later").classList.toggle("cur", !!r && !r.score);
+    $("later").textContent = r && !r.score ? "Bleibt offen (speichern)" : "Später beurteilen";
+    // Vorschläge
+    const q = norm(idIn.value);
+    let sugg = [];
+    if(sess && q && !locked){
+      sugg = sessTiere(sess.id).filter(x => norm(x.tier).includes(q) && x.id !== editing).sort(natSort).slice(0,5);
+    }
+    $("sugg").innerHTML = sugg.map(x => '<button class="chip" data-open="'+x.id+'"><i class="pill '+pillCls(x.score)+'"></i><span>'+esc(x.tier)+'</span></button>').join("");
+  }
+
+  function commit(score){
+    const sess = curSess();
+    if(!sess){ toast("Bitte zuerst einen Durchgang anlegen"); show("durchgaenge"); return; }
+    const tier = idIn.value.trim().replace(/\s+/g," ");
+    if(!tier){ toast("Bitte eine Tier-ID eingeben"); idIn.focus(); return; }
+    const note = noteIn.value.trim();
+    let r = editRec();
+    if(r && locked){
+      const clash = findByTier(sess.id, tier, r.id);
+      if(clash){ toast("„" + clash.tier + "“ gibt es in diesem Durchgang schon"); return; }
+    }
+    if(r){
+      const before = {tier:r.tier, score:r.score, note:r.note, t2:r.t2};
+      Object.assign(r, {tier, score, note, t2: Date.now()});
+      touch("tiere", r);
+      const msg = before.score !== score
+        ? "„" + tier + "“: " + catLabel(before.score) + " → " + catLabel(score)
+        : "„" + tier + "“ gespeichert";
+      toast(msg, () => { Object.assign(r, before); touch("tiere", r); renderAll(); });
+    } else {
+      r = {id: uid(), sid: sess.id, tier, score, note, t: Date.now(), t2: Date.now()};
+      state.tiere.push(r); touch("tiere", r);
+      toast("„" + tier + "“: " + catLabel(score), () => { r.del = true; touch("tiere", r); renderAll(); });
+    }
+    if(navigator.vibrate) try{ navigator.vibrate(30); }catch(_){}
+    closeEdit(); renderAll();
+    idIn.focus();
+  }
+  $("scores").addEventListener("click", e => { const b = e.target.closest(".sc"); if(b) commit(b.dataset.s); });
+  $("later").addEventListener("click", () => commit(null));
+
+  document.addEventListener("click", e => {
+    const b = e.target.closest("[data-open]"); if(b) openRecord(b.dataset.open);
+  });
+
+  function chip(r){
+    return '<button class="chip'+(r.score?'':' openchip')+'" data-open="'+r.id+'">' +
+      (r.score ? '<i class="pill '+r.score+'"></i>' : '') + '<span>'+esc(r.tier)+'</span></button>';
+  }
+  function renderLists(){
+    const sess = curSess();
+    const recs = sess ? sessTiere(sess.id) : [];
+    const open = recs.filter(r => !r.score).sort(natSort);
+    $("openBlock").hidden = !open.length;
+    $("openH").textContent = "Noch offen (" + open.length + "), zum Beurteilen antippen";
+    $("openList").innerHTML = open.map(chip).join("");
+    const done = recs.filter(r => r.score).sort((a,b)=>(b.t2||b.t)-(a.t2||a.t));
+    $("recentH").textContent = recs.length ? "Zuletzt beurteilt, " + recs.length + " Tiere im Durchgang" : "Noch keine Tiere in diesem Durchgang";
+    $("recent").innerHTML = done.slice(0,8).map(chip).join("");
+    $("navBadge").hidden = !open.length; $("navBadge").textContent = open.length;
+  }
+
+  // ---------- Tiere ----------
+  let filter = "all";
+  $("filters").addEventListener("click", e => {
+    const b = e.target.closest("button"); if(!b) return;
+    filter = b.dataset.f;
+    document.querySelectorAll("#filters button").forEach(x => x.setAttribute("aria-pressed", x === b));
+    renderTiere();
+  });
+  $("search").addEventListener("input", renderTiere);
+  function renderTiere(){
+    const sess = curSess();
+    const recs = sess ? sessTiere(sess.id) : [];
+    const c = {ok:0, sus:0, lame:0, open:0};
+    recs.forEach(r => c[r.score || "open"]++);
+    $("kOk").textContent = c.ok; $("kSus").textContent = c.sus; $("kLame").textContent = c.lame; $("kOpen").textContent = c.open;
+    const judged = c.ok + c.sus + c.lame;
+    $("share").innerHTML = judged ? ORDER.map(k => '<i style="width:'+(100*c[k]/judged)+'%;background:var(--'+k+')"></i>').join("") : "";
+    $("shareTxt").textContent = judged
+      ? "Von " + judged + " beurteilten Tieren: " + pct(c.lame,judged) + " lahm, " + pct(c.sus,judged) + " verdächtig."
+      : "Noch keine Beurteilungen.";
+    const q = norm($("search").value);
+    const list = recs.filter(r => (filter === "all" || (r.score || "open") === filter) && (!q || norm(r.tier).includes(q) || norm(r.note).includes(q))).sort(natSort);
+    $("list").innerHTML = list.length ? list.map(r =>
+      '<button class="row" data-open="'+r.id+'"><i class="pill '+pillCls(r.score)+'"></i><div class="info"><b>'+esc(r.tier)+'</b><span>'+
+      catLabel(r.score) + (r.note ? ", " + esc(r.note) : "") + '</span></div><span class="go">Öffnen</span></button>'
+    ).join("") : '<div class="empty">' + (recs.length ? "Keine Tiere für diesen Filter." : "Noch keine Tiere erfasst.") + '</div>';
+  }
+  const pct = (a,b) => Math.round(100*a/b) + " %";
+
+  // ---------- Excel ----------
+  async function exportXlsx(sessions, name){
+    const rows = [];
+    sessions.forEach(s => sessTiere(s.id).sort(natSort).forEach(r => rows.push({
+      "Betrieb": s.farm, "Gruppe": s.group, "Datum": fmtDate(s.date), "Tier-ID": r.tier,
+      "Beurteilung": catLabel(r.score), "Bemerkung": r.note || "",
+      "Erfasst": fmtDT(r.t), "Zuletzt geändert": fmtDT(r.t2 || r.t)
+    })));
+    if(!rows.length){ toast("Keine Tiere zum Exportieren"); return; }
+    if(typeof XLSX === "undefined"){ toast("Excel-Bibliothek fehlt. Bitte Seite einmal mit Internet neu laden."); return; }
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.json_to_sheet(rows);
+    ws["!cols"] = [{wch:20},{wch:20},{wch:11},{wch:28},{wch:16},{wch:40},{wch:17},{wch:17}];
+    ws["!autofilter"] = {ref: ws["!ref"]};
+    XLSX.utils.book_append_sheet(wb, ws, "Tiere");
+    const sum = sessions.map(s => {
+      const rs = sessTiere(s.id), c = {ok:0,sus:0,lame:0,open:0};
+      rs.forEach(r => c[r.score || "open"]++);
+      const j = c.ok + c.sus + c.lame;
+      return {"Betrieb": s.farm, "Gruppe": s.group, "Datum": fmtDate(s.date), "Tiere gesamt": rs.length,
+        "nicht lahm": c.ok, "verdächtig": c.sus, "lahm": c.lame, "nicht beurteilt": c.open,
+        "Anteil lahm (%)": j ? Math.round(1000*c.lame/j)/10 : "", "Anteil verdächtig (%)": j ? Math.round(1000*c.sus/j)/10 : ""};
+    });
+    const ws2 = XLSX.utils.json_to_sheet(sum);
+    ws2["!cols"] = [{wch:20},{wch:20},{wch:11},{wch:12},{wch:11},{wch:11},{wch:8},{wch:15},{wch:16},{wch:20}];
+    XLSX.utils.book_append_sheet(wb, ws2, "Übersicht");
+    const data = new Uint8Array(XLSX.write(wb, {bookType:"xlsx", type:"array"}));
+    const filename = name.replace(/[^\wäöüÄÖÜß.-]+/g,"_").replace(/_+/g,"_") + ".xlsx";
+    const mime = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+    const markDone = () => {
+      const now = Date.now();
+      sessions.forEach(s => { s.exp = now; s.u = now; });
+      persist(); renderAll();
+    };
+    let file = null;
+    try{ file = new File([data], filename, {type:mime}); }catch(e){}
+    const touchDevice = matchMedia("(pointer: coarse)").matches;
+    if(file && touchDevice && navigator.canShare && navigator.canShare({files:[file]})){
+      try{ await navigator.share({files:[file], title:filename}); markDone(); toast("Excel-Datei weitergegeben"); return; }
+      catch(e){ if(e && e.name === "AbortError") return; }
+    }
+    try{
+      const url = URL.createObjectURL(new Blob([data], {type:mime}));
+      const a = document.createElement("a");
+      a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 30000);
+      markDone(); toast("Excel-Datei heruntergeladen");
+    }catch(e){ toast("Export hat nicht geklappt. Bitte erneut versuchen."); }
+  }
+  $("expCur").addEventListener("click", () => { const s = curSess(); if(s) exportXlsx([s], "Lahmheit_" + s.farm + "_" + s.group + "_" + s.date); else toast("Kein Durchgang ausgewählt"); });
+  $("expAll").addEventListener("click", () => exportXlsx(live(state.durchgaenge).sort((a,b)=>a.date.localeCompare(b.date) || a.c-b.c), "Lahmheit_alle_" + today()));
+
+  // ---------- Durchgänge ----------
+  let editSess = null;
+  function today(){ const d = new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+  function fmtDate(iso){ if(!iso) return ""; const [y,m,d] = iso.split("-"); return d+"."+m+"."+y; }
+  function fmtDT(t){ return t ? new Date(t).toLocaleString("de-DE",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}) : ""; }
+  function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+  function resetForm(){
+    editSess = null;
+    $("formH").textContent = "Neuer Durchgang"; $("saveSess").textContent = "Durchgang anlegen"; $("cancelSess").hidden = true;
+    $("fFarm").value = load("lt-lastfarm",""); $("fGroup").value = ""; $("fDate").value = today();
+  }
+  $("cancelSess").addEventListener("click", resetForm);
+  $("saveSess").addEventListener("click", () => {
+    const farm = $("fFarm").value.trim(), group = $("fGroup").value.trim(), date = $("fDate").value || today();
+    if(!farm){ $("fFarm").focus(); toast("Bitte den Betrieb eintragen"); return; }
+    if(!group){ $("fGroup").focus(); toast("Bitte die Gruppe eintragen"); return; }
+    save("lt-lastfarm", farm);
+    if(editSess){
+      const s = state.durchgaenge.find(x => x.id === editSess);
+      if(s){ Object.assign(s, {farm, group, date}); touch("durchgaenge", s); toast("Durchgang geändert"); }
+      resetForm(); renderAll();
+    } else {
+      const s = {id: uid(), farm, group, date, c: Date.now()};
+      state.durchgaenge.push(s); state.current = s.id; touch("durchgaenge", s);
+      closeEdit(); resetForm(); renderAll(); show("erfassen"); toast("Durchgang angelegt");
+    }
+  });
+  $("sessList").addEventListener("click", e => {
+    const b = e.target.closest("button"); if(!b) return;
+    const s = state.durchgaenge.find(x => x.id === b.dataset.id); if(!s) return;
+    if(b.dataset.a === "use"){ state.current = s.id; persist(); closeEdit(); renderAll(); show("erfassen"); }
+    if(b.dataset.a === "edit"){
+      editSess = s.id; $("formH").textContent = "Durchgang bearbeiten"; $("saveSess").textContent = "Änderungen speichern"; $("cancelSess").hidden = false;
+      $("fFarm").value = s.farm; $("fGroup").value = s.group; $("fDate").value = s.date; window.scrollTo(0,0);
+    }
+    if(b.dataset.a === "rm"){
+      if(!b.classList.contains("arm")){ b.classList.add("arm"); b.textContent = "Wirklich mit allen Tieren löschen?"; setTimeout(()=>{ b.classList.remove("arm"); b.textContent = "Löschen"; }, 3500); return; }
+      s.del = true; touch("durchgaenge", s);
+      sessTiere(s.id).forEach(r => { r.del = true; touch("tiere", r); });
+      if(state.current === s.id){ const n = live(state.durchgaenge).sort((a,b)=>b.c-a.c)[0]; state.current = n ? n.id : null; persist(); closeEdit(); }
+      if(editSess === s.id) resetForm();
+      renderAll();
+    }
+  });
+  function renderSessions(){
+    const list = live(state.durchgaenge).sort((a,b) => b.date.localeCompare(a.date) || b.c - a.c);
+    $("sessList").innerHTML = list.length ? list.map(s => {
+      const rs = sessTiere(s.id), open = rs.filter(r => !r.score).length;
+      const cur = s.id === state.current; let st;
+      return '<div class="srow"><div class="info"><b>'+esc(s.farm)+', '+esc(s.group)+'</b><span>'+fmtDate(s.date)+', '+rs.length+' Tiere'+(open? ', '+open+' offen':'')+((st=exportState(s))==="never"||st==="changed" ? ', <span class="warn">'+EXPTXT[st]+'</span>' : '')+'</span></div>' +
+        (cur ? '<span class="tag">aktiv</span>' : '<button class="btn ghost" data-a="use" data-id="'+s.id+'">Öffnen</button>') +
+        '<button class="lnk" data-a="edit" data-id="'+s.id+'">Bearbeiten</button>' +
+        '<button class="lnk" data-a="rm" data-id="'+s.id+'">Löschen</button></div>';
+    }).join("") : '<div class="empty">Noch kein Durchgang. Leg oben den ersten an.</div>';
+    const s = curSess();
+    $("sessName").textContent = s ? s.farm + ", " + s.group : "Kein Durchgang";
+    $("sessSub").textContent = s ? fmtDate(s.date) + ", tippen zum Wechseln" : "Tippen, um einen anzulegen";
+  }
+
+  // ---------- Navigation ----------
+  function show(v){
+    ["erfassen","tiere","durchgaenge"].forEach(x => $("v-"+x).hidden = x !== v);
+    document.querySelectorAll("nav button").forEach(b => b.dataset.view === v ? b.setAttribute("aria-current","page") : b.removeAttribute("aria-current"));
+    window.scrollTo(0,0);
+  }
+  document.querySelector("nav").addEventListener("click", e => { const b = e.target.closest("button"); if(b) show(b.dataset.view); });
+  $("sessBtn").addEventListener("click", () => show("durchgaenge"));
+
+  // ---------- Toast ----------
+  let toastTimer = null, undoFn = null;
+  function toast(txt, undo){
+    $("toastTxt").textContent = txt; undoFn = undo || null; $("toastUndo").hidden = !undo;
+    $("toast").classList.add("show");
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => $("toast").classList.remove("show"), 4500);
+  }
+  $("toastUndo").addEventListener("click", () => { if(undoFn) undoFn(); undoFn = null; $("toast").classList.remove("show"); });
+
+  function renderAll(){
+    if(editing && !editRec()){ editing = null; locked = false; }
+    renderSessions(); renderEntry(); renderLists(); renderTiere(); updSyncLabel();
+  }
+
+  applyMode(); resetForm(); renderAll();
+  if(!curSess()) show("durchgaenge");
+  $("expState").addEventListener("click", () => show("tiere"));
+  if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(()=>{});
+  if("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(()=>{});
+})();
+</script>
+</body>
+</html>
