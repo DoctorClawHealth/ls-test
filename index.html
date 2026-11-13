@@ -71,6 +71,8 @@ header{
 .editbar span{ flex:1; min-width:0; }
 .editbar button{ color:var(--surface); padding:6px 8px; font-weight:700; }
 .editbar button.arm{ color:#FFB4AE; }
+.editbar button.new{ background:var(--surface); color:var(--ink); border-radius:8px; padding:8px 12px; }
+.editbar button.new.arm{ background:#FFB4AE; color:#1C2A21; }
 .idrow{ display:flex; gap:8px; margin-top:12px; }
 .field{
   flex:1; display:block; background:var(--surface); border:2px solid var(--line); border-radius:12px; padding:6px 12px 8px;
@@ -190,7 +192,7 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
     <div class="editbar" id="editBar" hidden>
       <span id="editTxt"></span>
       <button id="editDel">Löschen</button>
-      <button id="editCancel">Fertig</button>
+      <button id="editCancel" class="new">Neues Tier</button>
     </div>
     <div class="idrow">
       <label class="field" id="idField">
@@ -366,10 +368,16 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
   let numMode = load("lt-nummode", false);
   function applyMode(){
     idIn.setAttribute("inputmode", numMode ? "numeric" : "text");
+    if(numMode) idIn.setAttribute("pattern", "[0-9]*"); else idIn.removeAttribute("pattern");
     $("modeBtn").textContent = numMode ? "abc" : "123";
     $("modeBtn").setAttribute("aria-label", numMode ? "Auf Buchstaben-Tastatur umschalten" : "Auf Zahlen-Tastatur umschalten");
   }
-  $("modeBtn").addEventListener("click", () => { numMode = !numMode; save("lt-nummode", numMode); applyMode(); idIn.blur(); idIn.focus(); });
+  // Fokus im Feld halten, damit iOS die Tastatur direkt neu aufbaut
+  $("modeBtn").addEventListener("pointerdown", e => e.preventDefault());
+  $("modeBtn").addEventListener("click", () => {
+    numMode = !numMode; save("lt-nummode", numMode); applyMode();
+    idIn.blur(); idIn.focus();
+  });
 
   function findByTier(sid, tier, exceptId){
     const n = norm(tier); if(!n) return null;
@@ -387,7 +395,19 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
     editing = null; locked = false; noteTouched = false;
     idIn.value = ""; noteIn.value = ""; autoGrow(); renderEntry();
   }
-  $("editCancel").addEventListener("click", closeEdit);
+  // Neues Tier: geöffnetes Tier schließen, ohne es neu zu beurteilen
+  $("editCancel").addEventListener("pointerdown", e => e.preventDefault());
+  $("editCancel").addEventListener("click", e => {
+    const b = e.currentTarget, r = editRec();
+    const changed = r && (norm(idIn.value) !== norm(r.tier) || noteIn.value.trim() !== (r.note || ""));
+    if(changed && !b.classList.contains("arm")){
+      b.classList.add("arm"); b.textContent = "Änderungen verwerfen?";
+      setTimeout(() => { b.classList.remove("arm"); b.textContent = "Neues Tier"; }, 3000);
+      return;
+    }
+    b.classList.remove("arm"); b.textContent = "Neues Tier";
+    closeEdit(); idIn.focus();
+  });
   $("editDel").addEventListener("click", e => {
     const b = e.currentTarget, r = editRec(); if(!r) return;
     if(!b.classList.contains("arm")){ b.classList.add("arm"); b.textContent = "Wirklich löschen?"; setTimeout(()=>{ b.classList.remove("arm"); b.textContent = "Löschen"; }, 3000); return; }
@@ -415,12 +435,12 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
 
   function renderEntry(){
     const sess = curSess(), r = editRec();
-    $("editBar").hidden = !(r && locked);
-    if(r && locked) $("editTxt").textContent = "„" + r.tier + "“ wird bearbeitet";
+    $("editBar").hidden = !r;
+    if(r) $("editTxt").textContent = locked ? "„" + r.tier + "“ geöffnet: " + catLabel(r.score) : "Schon erfasst: " + catLabel(r.score);
     $("idField").classList.toggle("known", !!r && !locked);
     let hint = "";
     if(!sess) hint = "Zuerst einen Durchgang anlegen.";
-    else if(r && !locked) hint = "Schon erfasst: " + catLabel(r.score) + ". Neue Beurteilung ersetzt sie.";
+    else if(r && !locked) hint = "Neue Beurteilung ersetzt die bisherige.";
     else if(r && locked && norm(idIn.value) !== norm(r.tier)) hint = "Tier-ID wird beim Speichern geändert.";
     $("hint").textContent = hint;
     document.querySelectorAll(".sc").forEach(b => b.classList.toggle("cur", !!r && r.score === b.dataset.s));

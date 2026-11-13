@@ -1,5 +1,5 @@
 // Offline-Cache für die Lahmheits-App. Bei Änderungen VERSION erhöhen.
-const VERSION = "lahmheit-v1";
+const VERSION = "lahmheit-v3";
 const FILES = ["./", "index.html", "xlsx.full.min.js", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
 
 self.addEventListener("install", e => {
