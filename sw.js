@@ -1,9 +1,10 @@
 // Offline-Cache für die Lahmheits-App. Bei Änderungen VERSION erhöhen.
-const VERSION = "lahmheit-v3";
-const FILES = ["./", "index.html", "xlsx.full.min.js", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png"];
+const VERSION = "tmk-lahmheit-v7";
+const FILES = ["./", "index.html", "xlsx.full.min.js", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png", "logo-tmk.svg", "bogen.svg", "asap-latin.woff2"];
+const OPTIONAL = ["foerderleiste.jpg"];
 
 self.addEventListener("install", e => {
-  e.waitUntil(caches.open(VERSION).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
+  e.waitUntil(caches.open(VERSION).then(c => c.addAll(FILES).then(() => Promise.all(OPTIONAL.map(f => c.add(f).catch(() => {}))))).then(() => self.skipWaiting()));
 });
 self.addEventListener("activate", e => {
   e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== VERSION).map(k => caches.delete(k)))).then(() => self.clients.claim()));

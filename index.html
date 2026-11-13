@@ -3,36 +3,46 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Locomotion-Score</title>
+<title>Praxis Score</title>
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#2F6B4F">
+<meta name="theme-color" content="#366c91">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Lahmheit">
+<meta name="apple-mobile-web-app-title" content="Praxis Score">
+<link rel="preload" href="asap-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
 <style>
+@font-face{
+  font-family:"Asap"; font-style:normal; font-display:swap;
+  font-weight:100 900; font-stretch:75% 125%;
+  src:url(asap-latin.woff2) format("woff2-variations"), url(asap-latin.woff2) format("woff2");
+}
 :root{
-  --bg:#E9EEE8; --surface:#F7F9F5; --ink:#1C2A21; --muted:#5B6B60; --line:#C9D3C9;
-  --accent:#2F6B4F; --accent-ink:#FFFFFF; --key:#DDE5DC;
-  --ok:#3E8E5A; --okI:#FFFFFF; --sus:#E3AE2A; --susI:#1C2A21; --lame:#B8372F; --lameI:#FFFFFF;
-  --open:#7A8A80;
+  /* TMK-Styleguide */
+  --tmk-hellblau:#4dbbff; --tmk-blau:#366c92; --tmk-dunkelblau:#004669; --tmk-grau:#f3f6f9;
+  --bg:var(--tmk-grau); --surface:#FFFFFF; --ink:#0d2f44; --muted:#5d7385; --line:#d5e0e8;
+  --accent:var(--tmk-blau); --accent-ink:#FFFFFF; --cta:var(--tmk-hellblau); --cta-ink:var(--tmk-dunkelblau);
+  --key:#e6eef4;
+  --ok:#44c171; --sus:#f8b040; --lame:#ed706e; --open:#8fa3b2;
+  --okL:#d6f1e0; --susL:#fdeed5; --lameL:#fbe0df;
+  --okI:#00324c; --susI:#00324c; --lameI:#00324c;
+  --head1:var(--tmk-blau); --head2:var(--tmk-dunkelblau);
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#121815; --surface:#1B231E; --ink:#E6EDE7; --muted:#9AAA9F; --line:#2E3A33;
-    --accent:#6FBF95; --accent-ink:#0E1A13; --key:#25302A; --open:#8E9C93;
+    --bg:#0a1c28; --surface:#11293a; --ink:#e7f0f6; --muted:#97adbd; --line:#21405a;
+    --accent:#4dbbff; --accent-ink:#00324c; --key:#1a3a52; --open:#7f95a5;
+    --okL:#1d3f30; --susL:#45391f; --lameL:#47292c;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"]{
-  --bg:#121815; --surface:#1B231E; --ink:#E6EDE7; --muted:#9AAA9F; --line:#2E3A33;
-  --accent:#6FBF95; --accent-ink:#0E1A13; --key:#25302A; --open:#8E9C93;
+  --bg:#0a1c28; --surface:#11293a; --ink:#e7f0f6; --muted:#97adbd; --line:#21405a;
+  --accent:#4dbbff; --accent-ink:#00324c; --key:#1a3a52; --open:#7f95a5;
+  --okL:#1d3f30; --susL:#45391f; --lameL:#47292c;
   color-scheme: dark;
 }
 :root{ box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); }
@@ -40,74 +50,85 @@
 html{ scroll-padding-top:env(safe-area-inset-top,0px); }
 body{
   margin:0; background:var(--bg); color:var(--ink);
-  font-family:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family:"Asap", "Segoe UI", Roboto, system-ui, -apple-system, sans-serif;
   font-size:17px; line-height:1.4; -webkit-tap-highlight-color:transparent;
 }
-body::before{ content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px); z-index:10; background:var(--surface); }
+body::before{ content:""; position:fixed; inset:0 0 auto; height:env(safe-area-inset-top,0px); z-index:10; background:var(--head1); }
 button{ font:inherit; color:inherit; border:0; background:none; cursor:pointer; touch-action:manipulation; }
-button:focus-visible, input:focus-visible, textarea:focus-visible{ outline:3px solid var(--accent); outline-offset:2px; }
+button:focus-visible, input:focus-visible, textarea:focus-visible{ outline:3px solid var(--tmk-hellblau); outline-offset:2px; }
 .wrap{ max-width:520px; margin:0 auto; padding:0 12px 100px; }
 
+/* Kopfleiste: Blau-Verlauf mit angeschnittenem Fingerabdruck-Bogen */
 header{
-  position:sticky; top:env(safe-area-inset-top,0px); z-index:5; background:var(--surface);
-  border-bottom:1px solid var(--line); margin:0 -12px; padding:10px 14px;
-  display:flex; align-items:center; gap:10px;
+  position:sticky; top:env(safe-area-inset-top,0px); z-index:5; overflow:hidden;
+  background:linear-gradient(120deg, var(--head1) 0%, var(--head2) 75%, var(--head2) 100%);
+  color:#fff; margin:0 -12px; padding:10px 14px; display:flex; align-items:center; gap:12px;
 }
-.sess{ flex:1; min-width:0; text-align:left; padding:2px 0; }
-.sess b{ display:block; font-size:18px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.sess span{ color:var(--muted); font-size:14px; }
-.sync{ font-size:13px; color:var(--muted); display:flex; align-items:center; gap:6px; white-space:nowrap; }
-.dot{ width:9px; height:9px; border-radius:50%; background:var(--muted); }
-.exphint{ font-size:14px; margin-top:8px; }
-.exphint.warn{ color:var(--lame); font-weight:700; }
-.srow .warn{ color:var(--lame); }
+header::after{
+  content:""; position:absolute; right:-46px; top:-38px; width:150px; height:140px;
+  background:url(bogen.svg) no-repeat center/contain; opacity:.12; pointer-events:none;
+}
+.logo{ height:34px; width:auto; flex:none; position:relative; z-index:1; }
+.sess{ flex:1; min-width:0; text-align:left; padding:2px 0; color:#fff; position:relative; z-index:1; border-left:1px solid rgba(255,255,255,.3); padding-left:12px; }
+.sess b{ display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; font-size:16px; font-weight:700; line-height:1.2; overflow-wrap:anywhere; }
+.sess span{ display:block; color:rgba(255,255,255,.75); font-size:13px; margin-top:1px; }
+.sync{
+  font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:#fff; white-space:nowrap; line-height:1.15; text-align:left;
+  display:flex; align-items:center; gap:6px; padding:5px 10px; border:1.5px solid rgba(255,255,255,.7); border-radius:999px; position:relative; z-index:1;
+}
+.dot{ width:9px; height:9px; border-radius:50%; background:rgba(255,255,255,.6); }
 .dot.ok{ background:var(--ok); } .dot.wait{ background:var(--sus); } .dot.err{ background:var(--lame); }
+.exphint{ font-size:14px; margin-top:10px; color:var(--muted); }
+.exphint.warn{ color:var(--ink); background:var(--lameL); border-radius:10px; padding:8px 12px; }
+.srow .warn{ color:#c8504e; font-weight:700; }
 
 /* Erfassen */
 .editbar{
-  display:flex; align-items:center; gap:8px; margin-top:12px; padding:8px 8px 8px 12px;
-  background:var(--ink); color:var(--surface); border-radius:10px; font-size:15px;
+  display:flex; align-items:center; gap:8px; margin-top:12px; padding:8px 8px 8px 14px;
+  background:var(--tmk-dunkelblau); color:#fff; border-radius:14px; font-size:15px;
 }
 .editbar span{ flex:1; min-width:0; }
-.editbar button{ color:var(--surface); padding:6px 8px; font-weight:700; }
-.editbar button.arm{ color:#FFB4AE; }
-.editbar button.new{ background:var(--surface); color:var(--ink); border-radius:8px; padding:8px 12px; }
-.editbar button.new.arm{ background:#FFB4AE; color:#1C2A21; }
+.editbar button{ color:#fff; padding:6px 8px; font-weight:700; font-size:13px; text-transform:uppercase; letter-spacing:.03em; }
+.editbar button.arm{ color:#ffc9c8; }
+.editbar button.new{ background:var(--cta); color:var(--cta-ink); border-radius:999px; padding:9px 14px; }
+.editbar button.new.arm{ background:var(--lame); color:var(--okI); }
 .idrow{ display:flex; gap:8px; margin-top:12px; }
-.field{
-  flex:1; display:block; background:var(--surface); border:2px solid var(--line); border-radius:12px; padding:6px 12px 8px;
-}
+.field{ flex:1; display:block; background:var(--surface); border:2px solid var(--line); border-radius:14px; padding:6px 14px 8px; }
 .field small{ display:block; color:var(--muted); font-size:13px; }
-.field input, .field textarea{
-  width:100%; border:0; background:none; color:var(--ink); font:inherit; padding:0; outline:none; resize:none;
-}
+.field input, .field textarea{ width:100%; border:0; background:none; color:var(--ink); font:inherit; padding:0; outline:none; resize:none; }
 #tierId{ font-size:26px; font-weight:700; height:36px; }
 #note{ font-size:17px; min-height:26px; }
 .field:focus-within{ border-color:var(--accent); }
 .field.known{ border-color:var(--sus); }
-.modeBtn{ width:64px; border-radius:12px; background:var(--key); font-weight:700; font-size:15px; }
+.mode{ width:64px; display:flex; flex-direction:column; border:2px solid var(--line); border-radius:14px; overflow:hidden; background:var(--surface); }
+.mode button{ flex:1; font-weight:700; font-size:15px; color:var(--muted); }
+.mode button + button{ border-top:2px solid var(--line); }
+.mode button[aria-pressed="true"]{ background:var(--accent); color:var(--accent-ink); }
 .hint{ font-size:14px; color:var(--muted); min-height:20px; margin:6px 2px 0; }
 .sugg{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
 .notewrap{ margin-top:8px; }
 
 .scores{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:12px; }
 .sc{
-  border-radius:12px; padding:8px 4px 10px; display:flex; flex-direction:column; align-items:center; gap:2px;
-  min-height:100px; font-weight:700; font-size:17px; transition:transform .08s; border:3px solid transparent;
+  border-radius:18px; padding:8px 4px 12px; display:flex; flex-direction:column; align-items:center; gap:2px;
+  min-height:104px; font-weight:700; font-size:16px; transition:transform .08s; border:3px solid transparent;
 }
 .sc:active{ transform:scale(.97); }
 .sc svg{ width:54px; height:34px; }
 .sc.ok{ background:var(--ok); color:var(--okI); }
 .sc.sus{ background:var(--sus); color:var(--susI); }
 .sc.lame{ background:var(--lame); color:var(--lameI); }
-.sc.cur{ border-color:var(--ink); box-shadow:0 0 0 2px var(--surface) inset; }
+.sc.cur{ border-color:var(--tmk-dunkelblau); box-shadow:0 0 0 2px #fff inset; }
 .later{
-  width:100%; margin-top:8px; height:48px; border-radius:12px; border:2px dashed var(--open); color:var(--ink); font-weight:700;
+  width:100%; margin-top:8px; height:48px; border-radius:999px; border:2px dashed var(--open); color:var(--ink);
+  font-weight:700; font-size:14px; text-transform:uppercase; letter-spacing:.04em; background:var(--surface);
 }
 .later.cur{ border-style:solid; background:var(--key); }
 
-.block{ margin-top:18px; }
-.block h2, .panel h2{ font-size:15px; color:var(--muted); font-weight:400; margin:0 0 8px; }
+.block{ margin-top:20px; }
+.block h2, .panel h2{
+  font-size:21px; font-weight:300; font-stretch:87.5%; color:var(--ink); margin:0 0 10px; line-height:1.2;
+}
 .chips{ display:flex; flex-wrap:wrap; gap:6px; }
 .chip{
   display:inline-flex; align-items:center; gap:6px; background:var(--surface); border:1px solid var(--line);
@@ -120,41 +141,49 @@ header{
 .chip.openchip{ border:2px dashed var(--open); padding-left:12px; font-weight:700; }
 
 /* Tiere */
-.panel{ background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:14px; margin-top:14px; }
+.panel{ background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px; margin-top:14px; }
 .kpis{ display:grid; grid-template-columns:repeat(4,1fr); gap:6px; text-align:center; }
-.kpis b{ display:block; font-size:26px; font-variant-numeric:tabular-nums; }
+.kpis b{ display:block; font-size:28px; font-weight:300; font-stretch:87.5%; font-variant-numeric:tabular-nums; }
 .kpis span{ font-size:13px; color:var(--muted); }
 .kpis .k{ border-top:5px solid; padding-top:6px; }
-.share{ margin-top:10px; height:14px; border-radius:7px; overflow:hidden; display:flex; background:var(--key); }
+.share{ margin-top:12px; height:14px; border-radius:7px; overflow:hidden; display:flex; background:var(--key); }
 .share i{ display:block; height:100%; }
 .filters{ display:flex; gap:6px; overflow-x:auto; padding-bottom:2px; }
 .filters button{ flex:none; height:38px; padding:0 14px; border-radius:999px; border:2px solid var(--line); font-size:15px; }
-.filters button[aria-pressed="true"]{ background:var(--ink); color:var(--surface); border-color:var(--ink); }
-.search{ margin-top:10px; width:100%; height:44px; border-radius:10px; border:2px solid var(--line); background:var(--bg); color:var(--ink); font:inherit; padding:0 12px; }
+.filters button[aria-pressed="true"]{ background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
+.search{ margin-top:10px; width:100%; height:44px; border-radius:999px; border:2px solid var(--line); background:var(--bg); color:var(--ink); font:inherit; padding:0 16px; }
 .row{ display:flex; gap:12px; align-items:center; width:100%; text-align:left; padding:10px 0; border-top:1px solid var(--line); }
 .list .row:first-child{ border-top:0; }
 .row .pill{ width:28px; height:28px; }
 .row .info{ flex:1; min-width:0; }
 .row .info b{ display:block; overflow-wrap:anywhere; }
 .row .info span{ display:block; color:var(--muted); font-size:14px; overflow-wrap:anywhere; }
-.row .go{ color:var(--muted); font-size:14px; }
-.btn{ display:inline-flex; align-items:center; justify-content:center; height:46px; padding:0 18px; border-radius:10px; font-weight:700; }
-.btn.primary{ background:var(--accent); color:var(--accent-ink); }
-.btn.ghost{ border:2px solid var(--line); }
+.row .go{ color:var(--accent); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; }
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; height:46px; padding:0 22px; border-radius:999px;
+  font-weight:700; font-size:14px; text-transform:uppercase; letter-spacing:.04em;
+}
+.btn.primary{ background:var(--cta); color:var(--cta-ink); }
+.btn.ghost{ border:2px solid var(--accent); color:var(--accent); }
 .actions{ display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
 .empty{ color:var(--muted); padding:6px 0; }
 
 /* Durchgänge */
-.srow{ display:flex; align-items:center; gap:8px; padding:10px 0; border-top:1px solid var(--line); flex-wrap:wrap; }
+.srow{ display:flex; align-items:center; gap:6px; padding:10px 0; border-top:1px solid var(--line); flex-wrap:wrap; }
 .srow:first-child{ border-top:0; }
 .srow .info{ flex:1 1 180px; min-width:0; }
 .srow .info b{ display:block; overflow-wrap:anywhere; }
 .srow .info span{ color:var(--muted); font-size:14px; }
-.srow .tag{ color:var(--accent); font-size:14px; font-weight:700; }
-.srow .lnk{ color:var(--muted); font-size:14px; padding:6px 8px; }
-.srow .lnk.arm{ color:var(--lame); font-weight:700; }
+.srow .tag{ color:var(--accent); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; padding:0 6px; }
+.srow .btn{ height:38px; padding:0 14px; font-size:12px; }
+.srow .lnk{ color:var(--muted); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; padding:8px 6px; }
+.srow .lnk.xl{ color:var(--accent); }
+.srow .lnk.arm{ color:#c8504e; }
 label.f{ display:block; margin-top:10px; font-size:14px; color:var(--muted); }
-label.f input{ display:block; width:100%; margin-top:4px; height:46px; border-radius:10px; border:2px solid var(--line); background:var(--bg); color:var(--ink); font:inherit; padding:0 12px; }
+label.f input{ display:block; width:100%; margin-top:4px; height:46px; border-radius:12px; border:2px solid var(--line); background:var(--bg); color:var(--ink); font:inherit; padding:0 12px; }
+.foerder{ margin-top:14px; background:#fff; border-radius:16px; padding:12px; border:1px solid var(--line); }
+.foerder p{ margin:0 0 8px; font-size:12px; color:#5d7385; }
+.foerder img{ display:block; width:100%; height:auto; }
 
 nav{
   position:fixed; left:0; right:0; bottom:0; z-index:6; background:var(--surface); border-top:1px solid var(--line);
@@ -162,17 +191,18 @@ nav{
 }
 nav .in{ display:grid; grid-template-columns:repeat(3,1fr); max-width:520px; width:100%; }
 nav button{ height:58px; font-size:15px; color:var(--muted); border-top:3px solid transparent; }
-nav button[aria-current="page"]{ color:var(--ink); font-weight:700; border-top-color:var(--accent); }
-nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:10px; background:var(--open); color:var(--surface); font-size:12px; font-weight:700; margin-left:4px; }
+nav button[aria-current="page"]{ color:var(--ink); font-weight:700; border-top-color:var(--tmk-hellblau); }
+nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:10px; background:var(--accent); color:var(--accent-ink); font-size:12px; font-weight:700; margin-left:4px; }
 
 .toast{
   position:fixed; left:50%; transform:translateX(-50%); bottom:calc(70px + env(safe-area-inset-bottom,0px)); z-index:20;
-  background:var(--ink); color:var(--surface); border-radius:12px; padding:10px 10px 10px 16px;
-  display:flex; align-items:center; gap:12px; max-width:calc(100% - 24px); font-size:16px;
-  opacity:0; pointer-events:none; transition:opacity .15s;
+  background:var(--tmk-dunkelblau); color:#fff; border-radius:999px; padding:8px 8px 8px 18px;
+  display:flex; align-items:center; gap:12px; width:max-content; max-width:calc(100% - 24px); font-size:15px;
+  opacity:0; pointer-events:none; transition:opacity .15s; box-shadow:0 6px 20px rgba(0,40,60,.25);
 }
+.toast span{ flex:1; }
 .toast.show{ opacity:1; pointer-events:auto; }
-.toast button{ color:var(--surface); font-weight:700; text-decoration:underline; padding:6px 8px; }
+.toast button{ color:var(--tmk-hellblau); font-weight:700; font-size:13px; text-transform:uppercase; letter-spacing:.04em; padding:8px 10px; }
 [hidden]{ display:none !important; }
 @media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
 </style>
@@ -180,8 +210,9 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
 <body>
 <div class="wrap">
   <header>
-    <button class="sess" id="sessBtn" aria-label="Durchgang wechseln">
-      <b id="sessName">Kein Durchgang</b>
+    <img class="logo" src="logo-tmk.svg" alt="Telemedizin Klaue">
+    <button class="sess" id="sessBtn" aria-label="Erfassung wechseln">
+      <b id="sessName">Keine Erfassung</b>
       <span id="sessSub">Tippen, um einen anzulegen</span>
     </button>
     <button class="sync" id="expState" aria-label="Export-Status"><span class="dot" id="syncDot"></span><span id="syncTxt"></span></button>
@@ -199,7 +230,10 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
         <small>Tier-ID (Halsband, LOM oder Beschreibung)</small>
         <input id="tierId" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="next">
       </label>
-      <button class="modeBtn" id="modeBtn" aria-label="Tastatur umschalten">123</button>
+      <div class="mode" id="mode" role="group" aria-label="Tastatur">
+        <button data-m="text" aria-pressed="true" aria-label="Buchstaben-Tastatur">abc</button>
+        <button data-m="num" aria-pressed="false" aria-label="Zahlen-Tastatur">123</button>
+      </div>
     </div>
     <div class="sugg" id="sugg"></div>
     <div class="hint" id="hint"></div>
@@ -246,8 +280,8 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
     <div class="panel">
       <h2>Excel-Export</h2>
       <div class="actions" style="margin-top:0">
-        <button class="btn primary" id="expCur">Diesen Durchgang</button>
-        <button class="btn ghost" id="expAll">Alle Durchgänge</button>
+        <button class="btn primary" id="expCur">Diese Erfassung</button>
+        <button class="btn ghost" id="expAll">Alle Erfassungen</button>
       </div>
       <div class="exphint" id="expHint"></div>
     </div>
@@ -256,18 +290,23 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
   <!-- Durchgänge -->
   <section id="v-durchgaenge" hidden>
     <div class="panel">
-      <h2 id="formH">Neuer Durchgang</h2>
+      <h2 id="formH">Neue Erfassung</h2>
       <label class="f">Betrieb<input id="fFarm" autocomplete="off"></label>
       <label class="f">Gruppe<input id="fGroup" autocomplete="off" placeholder="z. B. Laktierende, Stall Nord"></label>
       <label class="f">Datum<input id="fDate" type="date"></label>
       <div class="actions">
-        <button class="btn primary" id="saveSess">Durchgang anlegen</button>
+        <button class="btn primary" id="saveSess">Erfassung anlegen</button>
         <button class="btn ghost" id="cancelSess" hidden>Abbrechen</button>
       </div>
     </div>
     <div class="panel">
-      <h2>Alle Durchgänge</h2>
+      <h2>Alle Erfassungen</h2>
       <div id="sessList"></div>
+      <div class="actions"><button class="btn primary" id="expAll2">Alle Erfassungen als Excel</button></div>
+    </div>
+    <div class="foerder" id="foerder">
+      <p>Telemedizin Klaue ist ein im Rahmen des GAP-Strategieplans Deutschland 2023–2027 gefördertes Projekt im Freistaat Bayern.</p>
+      <img src="foerderleiste.jpg" alt="Kofinanziert von der Europäischen Union, Bayerisches Staatsministerium für Ernährung, Landwirtschaft, Forsten und Tourismus, EIP-Agri" onerror="this.remove()">
     </div>
   </section>
 </div>
@@ -275,7 +314,7 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
 <nav><div class="in">
   <button data-view="erfassen" aria-current="page">Erfassen</button>
   <button data-view="tiere">Tiere<span class="badge" id="navBadge" hidden></span></button>
-  <button data-view="durchgaenge">Durchgänge</button>
+  <button data-view="durchgaenge">Archiv</button>
 </div></nav>
 
 <div class="toast" id="toast" role="status"><span id="toastTxt"></span><button id="toastUndo">Rückgängig</button></div>
@@ -335,13 +374,13 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
     const s = curSess();
     const st = s ? exportState(s) : "empty";
     $("syncDot").className = "dot " + (st === "ok" ? "ok" : st === "empty" ? "" : "err");
-    $("syncTxt").textContent = st === "ok" ? "exportiert" : st === "empty" ? "" : "nicht exportiert";
+    $("syncTxt").innerHTML = st === "ok" ? "Exportiert" : st === "empty" ? "" : "Nicht<br>exportiert";
     $("expState").hidden = st === "empty";
     const h = $("expHint");
     if(h){
       h.textContent = !s || st === "empty" ? "" : st === "ok"
         ? "Zuletzt exportiert am " + fmtDT(s.exp) + "."
-        : (st === "never" ? "Dieser Durchgang wurde noch nie exportiert." : "Seit dem letzten Export (" + fmtDT(s.exp) + ") gab es Änderungen.") + " Die Daten liegen nur auf diesem Handy.";
+        : (st === "never" ? "Diese Erfassung wurde noch nie exportiert." : "Seit dem letzten Export (" + fmtDT(s.exp) + ") gab es Änderungen.") + " Die Daten liegen nur auf diesem Handy.";
       h.className = "exphint" + (st === "ok" ? "" : " warn");
     }
   }
@@ -369,13 +408,13 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
   function applyMode(){
     idIn.setAttribute("inputmode", numMode ? "numeric" : "text");
     if(numMode) idIn.setAttribute("pattern", "[0-9]*"); else idIn.removeAttribute("pattern");
-    $("modeBtn").textContent = numMode ? "abc" : "123";
-    $("modeBtn").setAttribute("aria-label", numMode ? "Auf Buchstaben-Tastatur umschalten" : "Auf Zahlen-Tastatur umschalten");
+    document.querySelectorAll("#mode button").forEach(b => b.setAttribute("aria-pressed", (b.dataset.m === "num") === numMode));
   }
   // Fokus im Feld halten, damit iOS die Tastatur direkt neu aufbaut
-  $("modeBtn").addEventListener("pointerdown", e => e.preventDefault());
-  $("modeBtn").addEventListener("click", () => {
-    numMode = !numMode; save("lt-nummode", numMode); applyMode();
+  $("mode").addEventListener("pointerdown", e => e.preventDefault());
+  $("mode").addEventListener("click", e => {
+    const b = e.target.closest("button"); if(!b) return;
+    numMode = b.dataset.m === "num"; save("lt-nummode", numMode); applyMode();
     idIn.blur(); idIn.focus();
   });
 
@@ -439,7 +478,7 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
     if(r) $("editTxt").textContent = locked ? "„" + r.tier + "“ geöffnet: " + catLabel(r.score) : "Schon erfasst: " + catLabel(r.score);
     $("idField").classList.toggle("known", !!r && !locked);
     let hint = "";
-    if(!sess) hint = "Zuerst einen Durchgang anlegen.";
+    if(!sess) hint = "Zuerst eine Erfassung anlegen.";
     else if(r && !locked) hint = "Neue Beurteilung ersetzt die bisherige.";
     else if(r && locked && norm(idIn.value) !== norm(r.tier)) hint = "Tier-ID wird beim Speichern geändert.";
     $("hint").textContent = hint;
@@ -457,14 +496,14 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
 
   function commit(score){
     const sess = curSess();
-    if(!sess){ toast("Bitte zuerst einen Durchgang anlegen"); show("durchgaenge"); return; }
+    if(!sess){ toast("Bitte zuerst eine Erfassung anlegen"); show("durchgaenge"); return; }
     const tier = idIn.value.trim().replace(/\s+/g," ");
     if(!tier){ toast("Bitte eine Tier-ID eingeben"); idIn.focus(); return; }
     const note = noteIn.value.trim();
     let r = editRec();
     if(r && locked){
       const clash = findByTier(sess.id, tier, r.id);
-      if(clash){ toast("„" + clash.tier + "“ gibt es in diesem Durchgang schon"); return; }
+      if(clash){ toast("„" + clash.tier + "“ gibt es in dieser Erfassung schon"); return; }
     }
     if(r){
       const before = {tier:r.tier, score:r.score, note:r.note, t2:r.t2};
@@ -502,7 +541,7 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
     $("openH").textContent = "Noch offen (" + open.length + "), zum Beurteilen antippen";
     $("openList").innerHTML = open.map(chip).join("");
     const done = recs.filter(r => r.score).sort((a,b)=>(b.t2||b.t)-(a.t2||a.t));
-    $("recentH").textContent = recs.length ? "Zuletzt beurteilt, " + recs.length + " Tiere im Durchgang" : "Noch keine Tiere in diesem Durchgang";
+    $("recentH").textContent = recs.length ? "Zuletzt beurteilt, " + recs.length + " Tiere in der Erfassung" : "Noch keine Tiere in dieser Erfassung";
     $("recent").innerHTML = done.slice(0,8).map(chip).join("");
     $("navBadge").hidden = !open.length; $("navBadge").textContent = open.length;
   }
@@ -585,7 +624,8 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
       markDone(); toast("Excel-Datei heruntergeladen");
     }catch(e){ toast("Export hat nicht geklappt. Bitte erneut versuchen."); }
   }
-  $("expCur").addEventListener("click", () => { const s = curSess(); if(s) exportXlsx([s], "Lahmheit_" + s.farm + "_" + s.group + "_" + s.date); else toast("Kein Durchgang ausgewählt"); });
+  $("expCur").addEventListener("click", () => { const s = curSess(); if(s) exportXlsx([s], "Lahmheit_" + s.farm + "_" + s.group + "_" + s.date); else toast("Keine Erfassung ausgewählt"); });
+  $("expAll2").addEventListener("click", () => $("expAll").click());
   $("expAll").addEventListener("click", () => exportXlsx(live(state.durchgaenge).sort((a,b)=>a.date.localeCompare(b.date) || a.c-b.c), "Lahmheit_alle_" + today()));
 
   // ---------- Durchgänge ----------
@@ -597,7 +637,7 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
 
   function resetForm(){
     editSess = null;
-    $("formH").textContent = "Neuer Durchgang"; $("saveSess").textContent = "Durchgang anlegen"; $("cancelSess").hidden = true;
+    $("formH").textContent = "Neue Erfassung"; $("saveSess").textContent = "Erfassung anlegen"; $("cancelSess").hidden = true;
     $("fFarm").value = load("lt-lastfarm",""); $("fGroup").value = ""; $("fDate").value = today();
   }
   $("cancelSess").addEventListener("click", resetForm);
@@ -608,20 +648,21 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
     save("lt-lastfarm", farm);
     if(editSess){
       const s = state.durchgaenge.find(x => x.id === editSess);
-      if(s){ Object.assign(s, {farm, group, date}); touch("durchgaenge", s); toast("Durchgang geändert"); }
+      if(s){ Object.assign(s, {farm, group, date}); touch("durchgaenge", s); toast("Erfassung geändert"); }
       resetForm(); renderAll();
     } else {
       const s = {id: uid(), farm, group, date, c: Date.now()};
       state.durchgaenge.push(s); state.current = s.id; touch("durchgaenge", s);
-      closeEdit(); resetForm(); renderAll(); show("erfassen"); toast("Durchgang angelegt");
+      closeEdit(); resetForm(); renderAll(); show("erfassen"); toast("Erfassung angelegt");
     }
   });
   $("sessList").addEventListener("click", e => {
     const b = e.target.closest("button"); if(!b) return;
     const s = state.durchgaenge.find(x => x.id === b.dataset.id); if(!s) return;
+    if(b.dataset.a === "xls"){ exportXlsx([s], "Lahmheit_" + s.farm + "_" + s.group + "_" + s.date); return; }
     if(b.dataset.a === "use"){ state.current = s.id; persist(); closeEdit(); renderAll(); show("erfassen"); }
     if(b.dataset.a === "edit"){
-      editSess = s.id; $("formH").textContent = "Durchgang bearbeiten"; $("saveSess").textContent = "Änderungen speichern"; $("cancelSess").hidden = false;
+      editSess = s.id; $("formH").textContent = "Erfassung bearbeiten"; $("saveSess").textContent = "Änderungen speichern"; $("cancelSess").hidden = false;
       $("fFarm").value = s.farm; $("fGroup").value = s.group; $("fDate").value = s.date; window.scrollTo(0,0);
     }
     if(b.dataset.a === "rm"){
@@ -640,12 +681,13 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
       const cur = s.id === state.current; let st;
       return '<div class="srow"><div class="info"><b>'+esc(s.farm)+', '+esc(s.group)+'</b><span>'+fmtDate(s.date)+', '+rs.length+' Tiere'+(open? ', '+open+' offen':'')+((st=exportState(s))==="never"||st==="changed" ? ', <span class="warn">'+EXPTXT[st]+'</span>' : '')+'</span></div>' +
         (cur ? '<span class="tag">aktiv</span>' : '<button class="btn ghost" data-a="use" data-id="'+s.id+'">Öffnen</button>') +
+        (rs.length ? '<button class="lnk xl" data-a="xls" data-id="'+s.id+'">Excel</button>' : '') +
         '<button class="lnk" data-a="edit" data-id="'+s.id+'">Bearbeiten</button>' +
         '<button class="lnk" data-a="rm" data-id="'+s.id+'">Löschen</button></div>';
-    }).join("") : '<div class="empty">Noch kein Durchgang. Leg oben den ersten an.</div>';
+    }).join("") : '<div class="empty">Noch keine Erfassung. Leg oben die erste an.</div>';
     const s = curSess();
-    $("sessName").textContent = s ? s.farm + ", " + s.group : "Kein Durchgang";
-    $("sessSub").textContent = s ? fmtDate(s.date) + ", tippen zum Wechseln" : "Tippen, um einen anzulegen";
+    $("sessName").textContent = s ? s.farm + ", " + s.group : "Keine Erfassung";
+    $("sessSub").textContent = s ? fmtDate(s.date) + " ▾" : "Tippen, um einen anzulegen";
   }
 
   // ---------- Navigation ----------
