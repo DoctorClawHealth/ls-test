@@ -131,6 +131,49 @@ header .bar::after{
   width:100%; margin-top:8px; height:44px; border-radius:999px; border:2px dashed var(--open); color:var(--ink);
   font-weight:700; font-size:14px; text-transform:uppercase; letter-spacing:.04em; background:var(--surface);
 }
+/* Zählung */
+.ztotal{ display:flex; align-items:baseline; justify-content:space-between; margin:12px 2px 0; }
+.ztotal b{ font-size:21px; font-weight:300; font-stretch:87.5%; }
+.ztotal span{ font-size:13px; color:var(--muted); }
+.zscores{ display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:8px; }
+.zc{ border-radius:18px; min-height:118px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:2px; font-weight:700; font-size:15px; transition:transform .08s; }
+.zc:active{ transform:scale(.96); }
+.zc .num{ font-size:44px; line-height:1; font-weight:700; font-variant-numeric:tabular-nums; }
+.zc.ok{ background:var(--ok); color:var(--okI); } .zc.sus{ background:var(--sus); color:var(--susI); } .zc.lame{ background:var(--lame); color:var(--lameI); }
+.zc.bump{ animation:bump .25s; }
+@keyframes bump{ 50%{ transform:scale(.94); } }
+.attach{ margin-top:10px; background:var(--surface); border:2px solid var(--line); border-radius:16px; padding:10px 12px 12px; }
+.attach.sus{ border-color:var(--sus); } .attach.lame{ border-color:var(--lame); } .attach.ok{ border-color:var(--ok); }
+.attach .top{ display:flex; align-items:center; gap:8px; }
+.attach .top b{ flex:1; font-size:15px; }
+.attach .x{ width:34px; height:34px; border-radius:50%; font-size:20px; color:var(--muted); }
+.seg{ display:flex; border:2px solid var(--line); border-radius:999px; overflow:hidden; margin-top:8px; }
+.seg button{ flex:1; height:36px; font-size:14px; font-weight:700; color:var(--muted); }
+.seg button + button{ border-left:2px solid var(--line); }
+.seg button[aria-pressed="true"]{ background:var(--accent); color:var(--accent-ink); }
+.seg button:disabled{ opacity:.5; }
+.attach .seg button[data-k="ok"][aria-pressed="true"]{ background:var(--ok); color:var(--okI); }
+.attach .seg button[data-k="sus"][aria-pressed="true"]{ background:var(--sus); color:var(--susI); }
+.attach .seg button[data-k="lame"][aria-pressed="true"]{ background:var(--lame); color:var(--lameI); }
+.attach .row2{ display:flex; gap:8px; margin-top:8px; }
+.attach input{ width:100%; height:42px; border-radius:12px; border:2px solid var(--line); background:var(--bg); color:var(--ink); font:inherit; padding:0 12px; }
+.attach input:focus{ border-color:var(--accent); outline:none; }
+.attach #aId{ font-weight:700; }
+.attach .mini{ width:84px; flex:none; display:flex; border:2px solid var(--line); border-radius:12px; overflow:hidden; }
+.attach .mini button{ flex:1; font-size:12px; font-weight:700; color:var(--muted); }
+.attach .mini button[aria-pressed="true"]{ background:var(--accent); color:var(--accent-ink); }
+.attach .acts{ display:flex; gap:8px; margin-top:10px; align-items:center; }
+.attach .acts .btn{ height:40px; padding:0 18px; font-size:13px; }
+.attach .acts .del{ margin-left:auto; color:var(--muted); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; padding:8px 6px; }
+.attach .acts .del.arm{ color:#c8504e; }
+.zundo{ width:100%; margin-top:10px; height:46px; border-radius:999px; border:2px solid var(--accent); color:var(--accent); background:var(--surface); font-weight:700; font-size:13px; text-transform:uppercase; letter-spacing:.04em; }
+.zundo:disabled{ opacity:.4; }
+.kindtag{ display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--accent); border:1.5px solid var(--accent); border-radius:999px; padding:0 7px; margin-left:4px; vertical-align:1px; }
+.viewbar{ display:flex; align-items:center; gap:10px; margin-top:12px; padding:10px 10px 10px 14px; border-radius:16px; background:var(--key); border:2px dashed var(--accent); }
+.viewbar div{ flex:1; min-width:0; font-size:14px; }
+.viewbar div b{ display:block; font-size:15px; overflow-wrap:anywhere; }
+.viewbar .btn{ height:38px; padding:0 14px; font-size:12px; flex:none; }
+.row.ro{ cursor:default; }
 .later.cur{ border-style:solid; background:var(--key); }
 
 .block{ margin-top:20px; }
@@ -154,6 +197,7 @@ header .bar::after{
 .kpis b{ display:block; font-size:28px; font-weight:300; font-stretch:87.5%; font-variant-numeric:tabular-nums; }
 .kpis span{ font-size:13px; color:var(--muted); }
 .kpis .k{ border-top:5px solid; padding-top:6px; }
+.kpis.three{ grid-template-columns:repeat(3,1fr); }
 .share{ margin-top:12px; height:14px; border-radius:7px; overflow:hidden; display:flex; background:var(--key); }
 .share i{ display:block; height:100%; }
 .filters{ display:flex; gap:6px; overflow-x:auto; padding-bottom:2px; }
@@ -187,6 +231,7 @@ header .bar::after{
 .srow .lnk{ color:var(--muted); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; padding:8px 6px; }
 .srow .lnk.xl{ color:var(--accent); }
 .srow .lnk.arm{ color:#c8504e; }
+div.f{ display:block; margin-top:12px; font-size:14px; color:var(--muted); }
 label.f{ display:block; margin-top:10px; font-size:14px; color:var(--muted); }
 label.f input{ display:block; width:100%; margin-top:4px; height:46px; border-radius:12px; border:2px solid var(--line); background:var(--bg); color:var(--ink); font:inherit; padding:0 12px; }
 .foerder{ margin-top:14px; background:#fff; border-radius:16px; padding:12px; border:1px solid var(--line); }
@@ -230,6 +275,7 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
 
   <!-- Erfassen -->
   <section id="v-erfassen">
+   <div id="einzelUI">
     <div class="editbar" id="editBar" hidden>
       <span id="editTxt"></span>
       <button id="editDel">Löschen</button>
@@ -262,16 +308,46 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
       <h2 id="recentH">Zuletzt erfasst</h2>
       <div class="chips" id="recent"></div>
     </div>
+   </div>
+
+   <div id="zaehlUI" hidden>
+    <div class="ztotal"><b id="zTotal">Noch nichts gezählt</b><span>Jeder Tipp zählt ein Tier</span></div>
+    <div class="zscores" id="zScores"></div>
+    <div class="attach" id="attach" hidden>
+      <div class="top"><b id="aTitle">Zu diesem Tier (optional)</b><button class="x" id="aClose" aria-label="Schließen">×</button></div>
+      <div class="seg" id="aCat">
+        <button data-k="ok">nicht lahm</button><button data-k="sus">unklar</button><button data-k="lame">lahm</button>
+      </div>
+      <div class="row2">
+        <input id="aId" placeholder="Tier-ID (optional)" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done">
+        <div class="mini" id="aMode" role="group" aria-label="Tastatur"><button data-m="text" aria-label="Buchstaben">abc</button><button data-m="num" aria-label="Zahlen">123</button></div>
+      </div>
+      <div class="row2"><input id="aNote" placeholder="Bemerkung (optional)" autocomplete="off" enterkeyhint="done"></div>
+      <div class="acts">
+        <button class="btn primary" id="aSave">Speichern</button>
+        <button class="del" id="aDel">Tier entfernen</button>
+      </div>
+    </div>
+    <button class="zundo" id="zUndo">Letzten Tipp zurücknehmen</button>
+    <div class="block">
+      <h2 id="zIdH">Tiere mit ID oder Bemerkung</h2>
+      <div class="chips" id="zIdList"></div>
+    </div>
+   </div>
   </section>
 
   <!-- Tiere -->
   <section id="v-tiere" hidden>
+    <div class="viewbar" id="viewBar" hidden>
+      <div><span>Nur Ansicht, nichts wird verändert</span><b id="viewName"></b></div>
+      <button class="btn ghost" id="viewBack">Zurück</button>
+    </div>
     <div class="panel">
-      <div class="kpis">
+      <div class="kpis" id="kpis">
         <div class="k" style="border-color:var(--ok)"><b id="kOk">0</b><span>nicht lahm</span></div>
         <div class="k" style="border-color:var(--sus)"><b id="kSus">0</b><span>unklar</span></div>
         <div class="k" style="border-color:var(--lame)"><b id="kLame">0</b><span>lahm</span></div>
-        <div class="k" style="border-color:var(--open)"><b id="kOpen">0</b><span>offen</span></div>
+        <div class="k" id="kOpenBox" style="border-color:var(--open)"><b id="kOpen">0</b><span>offen</span></div>
       </div>
       <div class="share" id="share"></div>
       <div class="hint" id="shareTxt"></div>
@@ -284,6 +360,7 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
         <button data-f="sus" aria-pressed="false">unklar</button>
         <button data-f="lame" aria-pressed="false">lahm</button>
       </div>
+      <h2 id="listH" hidden>Tiere mit ID oder Bemerkung</h2>
       <input class="search" id="search" type="search" placeholder="Tier suchen" autocomplete="off">
       <div class="list" id="list" style="margin-top:6px"></div>
     </div>
@@ -304,6 +381,13 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
       <label class="f">Betrieb<input id="fFarm" autocomplete="off"></label>
       <label class="f">Gruppe<input id="fGroup" autocomplete="off" placeholder="z. B. Laktierende, Stall Nord"></label>
       <label class="f">Datum<input id="fDate" type="date"></label>
+      <div class="f">Art der Erfassung
+        <div class="seg" id="fKind">
+          <button data-k="einzel" aria-pressed="true">Einzeltiere mit ID</button>
+          <button data-k="zaehl" aria-pressed="false">Zählung</button>
+        </div>
+        <div class="hint" id="fKindHint"></div>
+      </div>
       <div class="actions">
         <button class="btn primary" id="saveSess">Erfassung anlegen</button>
         <button class="btn ghost" id="cancelSess" hidden>Abbrechen</button>
@@ -359,7 +443,14 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
   const curSess = () => state.durchgaenge.find(s => s.id === state.current && !s.del) || null;
   const sessTiere = sid => live(state.tiere).filter(r => r.sid === sid);
   const norm = s => String(s || "").trim().toLowerCase().replace(/\s+/g," ");
-  const natSort = (a,b) => a.tier.localeCompare(b.tier, "de", {numeric:true, sensitivity:"base"});
+  const natSort = (a,b) => (a.tier||a.note||"").localeCompare(b.tier||b.note||"", "de", {numeric:true, sensitivity:"base"});
+  const isCount = s => !!s && s.kind === "zaehl";
+  const sessOf = r => state.durchgaenge.find(x => x.id === r.sid) || null;
+  const hasLabel = r => !!(r.tier || r.note);
+  // Ansicht: welche Erfassung der Reiter „Tiere“ zeigt (ohne sie aktiv zu machen)
+  let viewSid = null;
+  const viewSess = () => (viewSid && state.durchgaenge.find(x => x.id === viewSid && !x.del)) || curSess();
+  const viewing = () => { const v = viewSess(), c = curSess(); return !!v && (!c || v.id !== c.id); };
 
   function touch(kind, item){
     item.u = Date.now();
@@ -381,7 +472,7 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
   }
   const EXPTXT = {never:"noch nie exportiert", changed:"Änderungen seit Export", ok:"exportiert", empty:""};
   function updSyncLabel(){
-    const s = curSess();
+    const s = viewSess();
     const st = s ? exportState(s) : "empty";
     const h = $("expHint");
     if(h){
@@ -413,9 +504,11 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
   // Tastaturmodus
   let numMode = load("lt-nummode", false);
   function applyMode(){
-    idIn.setAttribute("inputmode", numMode ? "numeric" : "text");
-    if(numMode) idIn.setAttribute("pattern", "[0-9]*"); else idIn.removeAttribute("pattern");
-    document.querySelectorAll("#mode button").forEach(b => b.setAttribute("aria-pressed", (b.dataset.m === "num") === numMode));
+    [idIn, $("aId")].forEach(inp => {
+      inp.setAttribute("inputmode", numMode ? "numeric" : "text");
+      if(numMode) inp.setAttribute("pattern", "[0-9]*"); else inp.removeAttribute("pattern");
+    });
+    document.querySelectorAll("#mode button, #aMode button").forEach(b => b.setAttribute("aria-pressed", (b.dataset.m === "num") === numMode));
   }
   // Fokus im Feld halten, damit iOS die Tastatur direkt neu aufbaut
   $("mode").addEventListener("pointerdown", e => e.preventDefault());
@@ -433,6 +526,7 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
 
   function openRecord(id){
     const r = state.tiere.find(x => x.id === id && !x.del); if(!r) return;
+    if(isCount(sessOf(r))){ show("erfassen"); openAttach(r.id, true); return; }
     editing = r.id; locked = true; noteTouched = true;
     idIn.value = r.tier; noteIn.value = r.note || "";
     show("erfassen"); renderEntry(); autoGrow();
@@ -538,7 +632,7 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
 
   function chip(r){
     return '<button class="chip'+(r.score?'':' openchip')+'" data-open="'+r.id+'">' +
-      (r.score ? '<i class="pill '+r.score+'"></i>' : '') + '<span>'+esc(r.tier)+'</span></button>';
+      (r.score ? '<i class="pill '+r.score+'"></i>' : '') + '<span>'+esc(r.tier || r.note)+'</span></button>';
   }
   function renderLists(){
     const sess = curSess();
@@ -550,7 +644,102 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
     const done = recs.filter(r => r.score).sort((a,b)=>(b.t2||b.t)-(a.t2||a.t));
     $("recentH").textContent = recs.length ? "Zuletzt beurteilt, " + recs.length + " Tiere in der Erfassung" : "Noch keine Tiere in dieser Erfassung";
     $("recent").innerHTML = done.slice(0,8).map(chip).join("");
-    $("navBadge").hidden = !open.length; $("navBadge").textContent = open.length;
+    $("navBadge").hidden = !open.length || isCount(sess); $("navBadge").textContent = open.length;
+  }
+
+  // ---------- Zählung ----------
+  let attachId = null;
+  const aId = $("aId"), aNote = $("aNote");
+  $("zScores").innerHTML = ORDER.map(k =>
+    '<button class="zc '+k+'" data-s="'+k+'"><span class="num" id="zn-'+k+'">0</span><span>'+CAT[k].label+'</span></button>'
+  ).join("");
+  function attachRec(){ return attachId ? state.tiere.find(r => r.id === attachId && !r.del) || null : null; }
+  function closeAttach(){ attachId = null; aId.value = ""; aNote.value = ""; }
+  function openAttach(id, fromList){
+    attachId = id; const r = attachRec(); if(!r){ attachId = null; return; }
+    aId.value = r.tier || ""; aNote.value = r.note || "";
+    renderCount();
+    if(fromList) setTimeout(() => { try{ $("attach").scrollIntoView({block:"center"}); }catch(e){} }, 60);
+  }
+  // Eingetipptes zum Tier übernehmen (auch wenn direkt weitergezählt wird)
+  function flushAttach(){
+    const r = attachRec(); if(!r) return false;
+    const tier = aId.value.trim().replace(/\s+/g," "), note = aNote.value.trim();
+    if(tier === (r.tier || "") && note === (r.note || "")) return false;
+    const clash = tier ? findByTier(r.sid, tier, r.id) : null;
+    Object.assign(r, {tier, note, t2: Date.now()}); touch("tiere", r);
+    if(clash) toast("„" + tier + "“ gibt es in dieser Erfassung schon, trotzdem gespeichert");
+    return true;
+  }
+  $("aMode").addEventListener("pointerdown", e => e.preventDefault());
+  $("aMode").addEventListener("click", e => {
+    const b = e.target.closest("button"); if(!b) return;
+    numMode = b.dataset.m === "num"; save("lt-nummode", numMode); applyMode();
+    aId.blur(); aId.focus();
+  });
+  $("zScores").addEventListener("click", e => {
+    const b = e.target.closest(".zc"); if(!b) return;
+    const sess = curSess(); if(!sess) return;
+    const saved = flushAttach();
+    const k = b.dataset.s, now = Date.now();
+    const r = {id: uid(), sid: sess.id, tier: "", score: k, note: "", t: now, t2: now};
+    state.tiere.push(r); touch("tiere", r);
+    closeAttach();
+    if(k !== "ok") attachId = r.id;
+    if(navigator.vibrate) try{ navigator.vibrate(25); }catch(_){}
+    b.classList.remove("bump"); void b.offsetWidth; b.classList.add("bump");
+    if(saved) toast("Angaben zum vorigen Tier gespeichert");
+    renderAll();
+  });
+  $("aCat").addEventListener("click", e => {
+    const b = e.target.closest("button"), r = attachRec(); if(!b || !r || r.score === b.dataset.k) return;
+    const before = r.score; r.score = b.dataset.k; r.t2 = Date.now(); touch("tiere", r);
+    toast(catLabel(before) + " → " + catLabel(r.score), () => { r.score = before; touch("tiere", r); renderAll(); });
+    renderAll();
+  });
+  $("aSave").addEventListener("click", () => {
+    const r = attachRec(); if(!r) return;
+    flushAttach();
+    toast(hasLabel(r) ? "„" + (r.tier || r.note) + "“ gespeichert" : "Gespeichert, ohne ID");
+    closeAttach(); renderAll();
+  });
+  $("aClose").addEventListener("click", () => { flushAttach(); closeAttach(); renderAll(); });
+  aId.addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); aNote.focus(); } });
+  aNote.addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); $("aSave").click(); } });
+  $("aDel").addEventListener("click", e => {
+    const b = e.currentTarget, r = attachRec(); if(!r) return;
+    if(!b.classList.contains("arm")){ b.classList.add("arm"); b.textContent = "Wirklich entfernen?"; setTimeout(() => { b.classList.remove("arm"); b.textContent = "Tier entfernen"; }, 3000); return; }
+    b.classList.remove("arm"); b.textContent = "Tier entfernen";
+    r.del = true; touch("tiere", r); closeAttach();
+    toast("Tier entfernen: " + catLabel(r.score), () => { r.del = false; touch("tiere", r); renderAll(); });
+    renderAll();
+  });
+  $("zUndo").addEventListener("click", () => {
+    const sess = curSess(); if(!sess) return;
+    const last = sessTiere(sess.id).sort((a,b) => b.t - a.t)[0]; if(!last) return;
+    last.del = true; touch("tiere", last);
+    if(attachId === last.id) closeAttach();
+    toast("Zurückgenommen: " + catLabel(last.score) + (hasLabel(last) ? " („" + (last.tier || last.note) + "“)" : ""),
+      () => { last.del = false; touch("tiere", last); renderAll(); });
+    renderAll();
+  });
+  function renderCount(){
+    const sess = curSess(), recs = sess ? sessTiere(sess.id) : [];
+    const c = {ok:0, sus:0, lame:0};
+    recs.forEach(r => { if(r.score in c) c[r.score]++; });
+    ORDER.forEach(k => $("zn-"+k).textContent = c[k]);
+    $("zTotal").textContent = recs.length ? recs.length + (recs.length === 1 ? " Tier" : " Tiere") + " gezählt" : "Noch nichts gezählt";
+    $("zUndo").disabled = !recs.length;
+    const r = attachRec();
+    $("attach").hidden = !r;
+    if(r){
+      $("attach").className = "attach " + r.score;
+      $("aTitle").textContent = "Zu diesem Tier (" + catLabel(r.score) + "), optional";
+      document.querySelectorAll("#aCat button").forEach(b => b.setAttribute("aria-pressed", b.dataset.k === r.score));
+    }
+    const ids = recs.filter(hasLabel).sort((a,b) => (b.t2||b.t) - (a.t2||a.t));
+    $("zIdH").textContent = ids.length ? "Tiere mit ID oder Bemerkung (" + ids.length + ")" : "Noch keine Tiere mit ID oder Bemerkung";
+    $("zIdList").innerHTML = ids.map(chip).join("");
   }
 
   // ---------- Tiere ----------
@@ -562,38 +751,52 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
     renderTiere();
   });
   $("search").addEventListener("input", renderTiere);
+  $("viewBack").addEventListener("click", () => show("durchgaenge"));
   function renderTiere(){
-    const sess = curSess();
+    const sess = viewSess(), cnt = isCount(sess), ro = viewing();
     const recs = sess ? sessTiere(sess.id) : [];
+    $("viewBar").hidden = !ro;
+    if(ro) $("viewName").textContent = sess.farm + ", " + sess.group + ", " + fmtDate(sess.date) + (cnt ? " (Zählung)" : "");
+    $("kOpenBox").hidden = cnt; $("kpis").classList.toggle("three", cnt);
+    $("listH").hidden = !cnt;
+    const fOpen = document.querySelector('#filters [data-f="open"]');
+    fOpen.hidden = cnt;
+    if(cnt && filter === "open"){ filter = "all"; document.querySelectorAll("#filters button").forEach(x => x.setAttribute("aria-pressed", x.dataset.f === "all")); }
     const c = {ok:0, sus:0, lame:0, open:0};
     recs.forEach(r => c[r.score || "open"]++);
     $("kOk").textContent = c.ok; $("kSus").textContent = c.sus; $("kLame").textContent = c.lame; $("kOpen").textContent = c.open;
     const judged = c.ok + c.sus + c.lame;
     $("share").innerHTML = judged ? ORDER.map(k => '<i style="width:'+(100*c[k]/judged)+'%;background:var(--'+k+')"></i>').join("") : "";
     $("shareTxt").textContent = judged
-      ? "Von " + judged + " beurteilten Tieren: " + pct(c.lame,judged) + " lahm, " + pct(c.sus,judged) + " unklar."
+      ? "Von " + judged + (cnt ? " gezählten" : " beurteilten") + " Tieren: " + pct(c.lame,judged) + " lahm, " + pct(c.sus,judged) + " unklar."
       : "Noch keine Beurteilungen.";
     const q = norm($("search").value);
-    const list = recs.filter(r => (filter === "all" || (r.score || "open") === filter) && (!q || norm(r.tier).includes(q) || norm(r.note).includes(q))).sort(natSort);
-    $("list").innerHTML = list.length ? list.map(r =>
-      '<button class="row" data-open="'+r.id+'"><i class="pill '+pillCls(r.score)+'"></i><div class="info"><b>'+esc(r.tier)+'</b><span>'+
-      catLabel(r.score) + (r.note ? ", " + esc(r.note) : "") + '</span></div><span class="go">Öffnen</span></button>'
-    ).join("") : '<div class="empty">' + (recs.length ? "Keine Tiere für diesen Filter." : "Noch keine Tiere erfasst.") + '</div>';
+    const base = cnt ? recs.filter(hasLabel) : recs;
+    const list = base.filter(r => (filter === "all" || (r.score || "open") === filter) && (!q || norm(r.tier).includes(q) || norm(r.note).includes(q))).sort(natSort);
+    const inner = r => '<i class="pill '+pillCls(r.score)+'"></i><div class="info"><b>'+esc(r.tier || "ohne ID")+'</b><span>'+
+      catLabel(r.score) + (r.note ? ", " + esc(r.note) : "") + '</span></div>';
+    $("list").innerHTML = list.length ? list.map(r => ro
+      ? '<div class="row ro">' + inner(r) + '</div>'
+      : '<button class="row" data-open="'+r.id+'">' + inner(r) + '<span class="go">Öffnen</span></button>'
+    ).join("") : '<div class="empty">' + (base.length ? "Keine Tiere für diesen Filter."
+      : cnt ? "Keine Tiere mit ID oder Bemerkung. Gezählte Tiere ohne Angaben stehen nur in den Zahlen oben."
+      : "Noch keine Tiere erfasst.") + '</div>';
   }
   const pct = (a,b) => Math.round(100*a/b) + " %";
 
   // ---------- Excel ----------
   async function exportXlsx(sessions, name){
     const rows = [];
-    sessions.forEach(s => sessTiere(s.id).sort(natSort).forEach(r => rows.push({
+    sessions.forEach(s => sessTiere(s.id).filter(r => !isCount(s) || hasLabel(r)).sort(natSort).forEach(r => rows.push({
       "Betrieb": s.farm, "Gruppe": s.group, "Datum": fmtDate(s.date), "Tier-ID": r.tier,
       "Beurteilung": catLabel(r.score), "Bemerkung": r.note || "",
       "Erfasst": fmtDT(r.t), "Zuletzt geändert": fmtDT(r.t2 || r.t)
     })));
-    if(!rows.length){ toast("Keine Tiere zum Exportieren"); return; }
+    if(!sessions.some(s => sessTiere(s.id).length)){ toast("Keine Tiere zum Exportieren"); return; }
     if(typeof XLSX === "undefined"){ toast("Excel-Bibliothek fehlt. Bitte Seite einmal mit Internet neu laden."); return; }
     const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.json_to_sheet(rows);
+    const ws = rows.length ? XLSX.utils.json_to_sheet(rows)
+      : XLSX.utils.aoa_to_sheet([["Betrieb","Gruppe","Datum","Tier-ID","Beurteilung","Bemerkung","Erfasst","Zuletzt geändert"]]);
     ws["!cols"] = [{wch:20},{wch:20},{wch:11},{wch:28},{wch:16},{wch:40},{wch:17},{wch:17}];
     ws["!autofilter"] = {ref: ws["!ref"]};
     XLSX.utils.book_append_sheet(wb, ws, "Tiere");
@@ -601,12 +804,12 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
       const rs = sessTiere(s.id), c = {ok:0,sus:0,lame:0,open:0};
       rs.forEach(r => c[r.score || "open"]++);
       const j = c.ok + c.sus + c.lame;
-      return {"Betrieb": s.farm, "Gruppe": s.group, "Datum": fmtDate(s.date), "Tiere gesamt": rs.length,
+      return {"Betrieb": s.farm, "Gruppe": s.group, "Datum": fmtDate(s.date), "Art": isCount(s) ? "Zählung" : "Einzeltiere", "Tiere gesamt": rs.length,
         "nicht lahm": c.ok, "unklar": c.sus, "lahm": c.lame, "nicht beurteilt": c.open,
         "Anteil lahm (%)": j ? Math.round(1000*c.lame/j)/10 : "", "Anteil unklar (%)": j ? Math.round(1000*c.sus/j)/10 : ""};
     });
     const ws2 = XLSX.utils.json_to_sheet(sum);
-    ws2["!cols"] = [{wch:20},{wch:20},{wch:11},{wch:12},{wch:11},{wch:11},{wch:8},{wch:15},{wch:16},{wch:20}];
+    ws2["!cols"] = [{wch:20},{wch:20},{wch:11},{wch:12},{wch:12},{wch:11},{wch:11},{wch:8},{wch:15},{wch:16},{wch:20}];
     XLSX.utils.book_append_sheet(wb, ws2, "Übersicht");
     const data = new Uint8Array(XLSX.write(wb, {bookType:"xlsx", type:"array"}));
     const filename = name.replace(/[^\wäöüÄÖÜß.-]+/g,"_").replace(/_+/g,"_") + ".xlsx";
@@ -631,7 +834,7 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
       markDone(); toast("Excel-Datei heruntergeladen");
     }catch(e){ toast("Export hat nicht geklappt. Bitte erneut versuchen."); }
   }
-  $("expCur").addEventListener("click", () => { const s = curSess(); if(s) exportXlsx([s], "Lahmheit_" + s.farm + "_" + s.group + "_" + s.date); else toast("Keine Erfassung ausgewählt"); });
+  $("expCur").addEventListener("click", () => { const s = viewSess(); if(s) exportXlsx([s], "Lahmheit_" + s.farm + "_" + s.group + "_" + s.date); else toast("Keine Erfassung ausgewählt"); });
   $("expAll2").addEventListener("click", () => $("expAll").click());
   $("expAll").addEventListener("click", () => exportXlsx(live(state.durchgaenge).sort((a,b)=>a.date.localeCompare(b.date) || a.c-b.c), "Lahmheit_alle_" + today()));
 
@@ -642,8 +845,17 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
   function fmtDT(t){ return t ? new Date(t).toLocaleString("de-DE",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}) : ""; }
   function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 
+  let fKind = "einzel";
+  function setKind(k, locked){
+    fKind = k;
+    document.querySelectorAll("#fKind button").forEach(b => { b.setAttribute("aria-pressed", b.dataset.k === k); b.disabled = !!locked; });
+    $("fKindHint").textContent = locked ? "Die Art lässt sich nur ändern, solange noch keine Tiere erfasst sind."
+      : k === "zaehl" ? "Tiere nur zählen. Auffällige Tiere bekommen auf Wunsch eine ID oder Bemerkung."
+      : "Jedes Tier wird mit ID erfasst und beurteilt.";
+  }
+  $("fKind").addEventListener("click", e => { const b = e.target.closest("button"); if(b && !b.disabled) setKind(b.dataset.k); });
   function resetForm(){
-    editSess = null;
+    editSess = null; setKind("einzel");
     $("formH").textContent = "Neue Erfassung"; $("saveSess").textContent = "Erfassung anlegen"; $("cancelSess").hidden = true;
     $("fFarm").value = load("lt-lastfarm",""); $("fGroup").value = ""; $("fDate").value = today();
   }
@@ -655,28 +867,30 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
     save("lt-lastfarm", farm);
     if(editSess){
       const s = state.durchgaenge.find(x => x.id === editSess);
-      if(s){ Object.assign(s, {farm, group, date}); touch("durchgaenge", s); toast("Erfassung geändert"); }
+      if(s){ Object.assign(s, {farm, group, date}); if(!sessTiere(s.id).length) s.kind = fKind; touch("durchgaenge", s); toast("Erfassung geändert"); }
       resetForm(); renderAll();
     } else {
-      const s = {id: uid(), farm, group, date, c: Date.now()};
+      const s = {id: uid(), farm, group, date, kind: fKind, c: Date.now()};
       state.durchgaenge.push(s); state.current = s.id; touch("durchgaenge", s);
-      closeEdit(); resetForm(); renderAll(); show("erfassen"); toast("Erfassung angelegt");
+      closeEdit(); closeAttach(); resetForm(); renderAll(); show("erfassen"); toast(fKind === "zaehl" ? "Zählung angelegt" : "Erfassung angelegt");
     }
   });
   $("sessList").addEventListener("click", e => {
     const b = e.target.closest("button"); if(!b) return;
     const s = state.durchgaenge.find(x => x.id === b.dataset.id); if(!s) return;
     if(b.dataset.a === "xls"){ exportXlsx([s], "Lahmheit_" + s.farm + "_" + s.group + "_" + s.date); return; }
-    if(b.dataset.a === "use"){ state.current = s.id; persist(); closeEdit(); renderAll(); show("erfassen"); }
+    if(b.dataset.a === "use"){ state.current = s.id; persist(); closeEdit(); closeAttach(); renderAll(); show("erfassen"); }
+    if(b.dataset.a === "view"){ viewSid = s.id; show("tiere", true); }
     if(b.dataset.a === "edit"){
-      editSess = s.id; $("formH").textContent = "Erfassung bearbeiten"; $("saveSess").textContent = "Änderungen speichern"; $("cancelSess").hidden = false;
-      $("fFarm").value = s.farm; $("fGroup").value = s.group; $("fDate").value = s.date; window.scrollTo(0,0);
+      editSess = s.id; $("formH").textContent = "Angaben ändern"; $("saveSess").textContent = "Änderungen speichern"; $("cancelSess").hidden = false;
+      $("fFarm").value = s.farm; $("fGroup").value = s.group; $("fDate").value = s.date;
+      setKind(isCount(s) ? "zaehl" : "einzel", sessTiere(s.id).length > 0); window.scrollTo(0,0);
     }
     if(b.dataset.a === "rm"){
       if(!b.classList.contains("arm")){ b.classList.add("arm"); b.textContent = "Wirklich mit allen Tieren löschen?"; setTimeout(()=>{ b.classList.remove("arm"); b.textContent = "Löschen"; }, 3500); return; }
       s.del = true; touch("durchgaenge", s);
       sessTiere(s.id).forEach(r => { r.del = true; touch("tiere", r); });
-      if(state.current === s.id){ const n = live(state.durchgaenge).sort((a,b)=>b.c-a.c)[0]; state.current = n ? n.id : null; persist(); closeEdit(); }
+      if(state.current === s.id){ const n = live(state.durchgaenge).sort((a,b)=>b.c-a.c)[0]; state.current = n ? n.id : null; persist(); closeEdit(); closeAttach(); }
       if(editSess === s.id) resetForm();
       renderAll();
     }
@@ -684,21 +898,26 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
   function renderSessions(){
     const list = live(state.durchgaenge).sort((a,b) => b.date.localeCompare(a.date) || b.c - a.c);
     $("sessList").innerHTML = list.length ? list.map(s => {
-      const rs = sessTiere(s.id), open = rs.filter(r => !r.score).length;
+      const rs = sessTiere(s.id), open = rs.filter(r => !r.score).length, cnt = isCount(s);
       const cur = s.id === state.current; let st;
-      return '<div class="srow"><div class="info"><b>'+esc(s.farm)+', '+esc(s.group)+'</b><span>'+fmtDate(s.date)+', '+rs.length+' Tiere'+(open? ', '+open+' offen':'')+((st=exportState(s))==="never"||st==="changed" ? ', <span class="warn">'+EXPTXT[st]+'</span>' : '')+'</span></div>' +
-        (cur ? '<span class="tag">aktiv</span>' : '<button class="btn ghost" data-a="use" data-id="'+s.id+'">Öffnen</button>') +
+      const what = cnt ? rs.length + ' gezählt' + (rs.filter(hasLabel).length ? ', ' + rs.filter(hasLabel).length + ' mit ID' : '')
+                       : rs.length + ' Tiere' + (open ? ', ' + open + ' offen' : '');
+      return '<div class="srow"><div class="info"><b>'+esc(s.farm)+', '+esc(s.group)+(cnt ? ' <span class="kindtag">Zählung</span>' : '')+'</b><span>'+fmtDate(s.date)+', '+what+((st=exportState(s))==="never"||st==="changed" ? ', <span class="warn">'+EXPTXT[st]+'</span>' : '')+'</span></div>' +
+        (cur ? '<span class="tag">aktiv</span>' : '<button class="btn ghost" data-a="use" data-id="'+s.id+'">Bearbeiten</button>') +
+        '<button class="lnk xl" data-a="view" data-id="'+s.id+'">Ansehen</button>' +
         (rs.length ? '<button class="lnk xl" data-a="xls" data-id="'+s.id+'">Excel</button>' : '') +
-        '<button class="lnk" data-a="edit" data-id="'+s.id+'">Bearbeiten</button>' +
+        '<button class="lnk" data-a="edit" data-id="'+s.id+'">Angaben ändern</button>' +
         '<button class="lnk" data-a="rm" data-id="'+s.id+'">Löschen</button></div>';
     }).join("") : '<div class="empty">Noch keine Erfassung. Leg oben die erste an.</div>';
     const s = curSess();
     $("sessName").textContent = s ? s.farm + ", " + s.group : "Keine Erfassung";
-    $("sessSub").textContent = s ? fmtDate(s.date) + " ▾" : "Tippen, um einen anzulegen";
+    $("sessSub").textContent = s ? fmtDate(s.date) + (isCount(s) ? " · Zählung" : "") + " ▾" : "Tippen, um eine anzulegen";
   }
 
   // ---------- Navigation ----------
-  function show(v){
+  function show(v, keepView){
+    if(!keepView) viewSid = null;
+    if(v === "tiere"){ renderTiere(); updSyncLabel(); }
     ["erfassen","tiere","durchgaenge"].forEach(x => $("v-"+x).hidden = x !== v);
     document.querySelectorAll("nav button").forEach(b => b.dataset.view === v ? b.setAttribute("aria-current","page") : b.removeAttribute("aria-current"));
     window.scrollTo(0,0);
@@ -717,6 +936,10 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
 
   function renderAll(){
     if(editing && !editRec()){ editing = null; locked = false; }
+    if(attachId && !attachRec()) closeAttach();
+    const cnt = isCount(curSess());
+    $("einzelUI").hidden = cnt; $("zaehlUI").hidden = !cnt;
+    renderCount();
     renderSessions(); renderEntry(); renderLists(); renderTiere(); updSyncLabel();
   }
 
