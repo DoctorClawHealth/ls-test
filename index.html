@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Praxis Score</title>
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#f3f6f9">
+<meta name="theme-color" content="#f3f6f9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0a1c28" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Praxis Score">
@@ -28,26 +29,30 @@
   --ok:#44c171; --sus:#f8b040; --lame:#ed706e; --open:#8fa3b2;
   --okL:#d6f1e0; --susL:#fdeed5; --lameL:#fbe0df;
   --okI:#00324c; --susI:#00324c; --lameI:#00324c;
-  --head1:var(--tmk-blau); --head2:var(--tmk-dunkelblau);
+  --head1:var(--tmk-blau); --head2:var(--tmk-dunkelblau); --danger:#c8504e;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
     --bg:#0a1c28; --surface:#11293a; --ink:#e7f0f6; --muted:#97adbd; --line:#21405a;
     --accent:#4dbbff; --accent-ink:#00324c; --key:#1a3a52; --open:#7f95a5;
-    --okL:#1d3f30; --susL:#45391f; --lameL:#47292c;
+    --okL:#1d3f30; --susL:#45391f; --lameL:#47292c; --danger:#ff9c98;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"]{
   --bg:#0a1c28; --surface:#11293a; --ink:#e7f0f6; --muted:#97adbd; --line:#21405a;
   --accent:#4dbbff; --accent-ink:#00324c; --key:#1a3a52; --open:#7f95a5;
-  --okL:#1d3f30; --susL:#45391f; --lameL:#47292c;
+  --okL:#1d3f30; --susL:#45391f; --lameL:#47292c; --danger:#ff9c98;
   color-scheme: dark;
 }
 :root{ box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); }
 *,*::before,*::after{ box-sizing:inherit; }
-html{ scroll-padding-top:env(safe-area-inset-top,0px); }
+html{ scroll-padding-top:env(safe-area-inset-top,0px); -webkit-text-size-adjust:100%; text-size-adjust:100%; }
+html{ overflow-x:hidden; }
+input, textarea, select{ min-width:0; max-width:100%; }
+.field, .idrow > *, .attach .row2 > *, .viewbar > div{ min-width:0; }
+input[type="date"]{ -webkit-appearance:none; appearance:none; display:block; min-height:46px; line-height:42px; text-align:left; }
 body{
   margin:0; background:var(--bg); color:var(--ink);
   font-family:"Asap", "Segoe UI", Roboto, system-ui, -apple-system, sans-serif;
@@ -77,15 +82,10 @@ header .bar::after{
 .sess{ flex:1; min-width:0; text-align:left; padding:2px 0; color:#fff; position:relative; z-index:1; border-left:1px solid rgba(255,255,255,.3); padding-left:12px; }
 .sess b{ display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; font-size:16px; font-weight:700; line-height:1.2; overflow-wrap:anywhere; }
 .sess span{ display:block; color:rgba(255,255,255,.75); font-size:13px; margin-top:1px; }
-.sync{
-  font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:#fff; white-space:nowrap; line-height:1.15; text-align:left;
-  display:flex; align-items:center; gap:6px; padding:5px 10px; border:1.5px solid rgba(255,255,255,.7); border-radius:999px; position:relative; z-index:1;
-}
-.dot{ width:9px; height:9px; border-radius:50%; background:rgba(255,255,255,.6); }
-.dot.ok{ background:var(--ok); } .dot.wait{ background:var(--sus); } .dot.err{ background:var(--lame); }
 .exphint{ font-size:14px; margin-top:10px; color:var(--muted); }
 .exphint.warn{ color:var(--ink); background:var(--lameL); border-radius:10px; padding:8px 12px; }
-.srow .warn{ color:#c8504e; font-weight:700; }
+#saveWarn{ margin-top:10px; font-weight:700; }
+.srow .warn{ color:var(--danger); font-weight:700; }
 
 /* Erfassen */
 .editbar{
@@ -99,7 +99,7 @@ header .bar::after{
 .editbar button.new.arm{ background:var(--lame); color:var(--okI); }
 .idrow{ display:flex; gap:8px; margin-top:8px; }
 .field{ flex:1; display:block; background:var(--surface); border:2px solid var(--line); border-radius:14px; padding:4px 14px 5px; }
-.field small{ display:block; color:var(--muted); font-size:13px; }
+.field small{ display:block; color:var(--muted); font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .field input, .field textarea{ width:100%; border:0; background:none; color:var(--ink); font:inherit; padding:0; outline:none; resize:none; }
 #tierId{ font-size:24px; font-weight:700; height:32px; }
 #note{ font-size:17px; min-height:26px; }
@@ -126,7 +126,7 @@ header .bar::after{
 .sc.ok{ background:var(--ok); color:var(--okI); }
 .sc.sus{ background:var(--sus); color:var(--susI); }
 .sc.lame{ background:var(--lame); color:var(--lameI); }
-.sc.cur{ border-color:var(--tmk-dunkelblau); box-shadow:0 0 0 2px #fff inset; }
+.sc.cur{ border-color:var(--ink); box-shadow:0 0 0 2px var(--surface) inset; }
 .later{
   width:100%; margin-top:8px; height:44px; border-radius:999px; border:2px dashed var(--open); color:var(--ink);
   font-weight:700; font-size:14px; text-transform:uppercase; letter-spacing:.04em; background:var(--surface);
@@ -146,7 +146,7 @@ header .bar::after{
 .attach.sus{ border-color:var(--sus); } .attach.lame{ border-color:var(--lame); } .attach.ok{ border-color:var(--ok); }
 .attach .top{ display:flex; align-items:center; gap:8px; }
 .attach .top b{ flex:1; font-size:15px; }
-.attach .x{ width:34px; height:34px; border-radius:50%; font-size:20px; color:var(--muted); }
+.attach .x{ width:40px; height:40px; margin:-4px -6px -4px 0; border-radius:50%; font-size:20px; color:var(--muted); }
 .seg{ display:flex; border:2px solid var(--line); border-radius:999px; overflow:hidden; margin-top:8px; }
 .seg button{ flex:1; height:36px; font-size:14px; font-weight:700; color:var(--muted); }
 .seg button + button{ border-left:2px solid var(--line); }
@@ -165,7 +165,7 @@ header .bar::after{
 .attach .acts{ display:flex; gap:8px; margin-top:10px; align-items:center; }
 .attach .acts .btn{ height:40px; padding:0 18px; font-size:13px; }
 .attach .acts .del{ margin-left:auto; color:var(--muted); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; padding:8px 6px; }
-.attach .acts .del.arm{ color:#c8504e; }
+.attach .acts .del.arm{ color:var(--danger); }
 .zundo{ width:100%; margin-top:10px; height:46px; border-radius:999px; border:2px solid var(--accent); color:var(--accent); background:var(--surface); font-weight:700; font-size:13px; text-transform:uppercase; letter-spacing:.04em; }
 .zundo:disabled{ opacity:.4; }
 .kindtag{ display:inline-block; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; color:var(--accent); border:1.5px solid var(--accent); border-radius:999px; padding:0 7px; margin-left:4px; vertical-align:1px; }
@@ -191,7 +191,7 @@ header .bar::after{
 .pill.open{ background:none; border:2px dashed var(--open); }
 .chip.openchip{ border:2px dashed var(--open); padding-left:12px; font-weight:700; }
 
-/* Tiere */
+/* Auswertung */
 .panel{ background:var(--surface); border:1px solid var(--line); border-radius:16px; padding:16px; margin-top:14px; }
 .kpis{ display:grid; grid-template-columns:repeat(4,1fr); gap:6px; text-align:center; }
 .kpis b{ display:block; font-size:28px; font-weight:300; font-stretch:87.5%; font-variant-numeric:tabular-nums; }
@@ -205,6 +205,7 @@ header .bar::after{
 .filters button[aria-pressed="true"]{ background:var(--accent); color:var(--accent-ink); border-color:var(--accent); }
 .search{ margin-top:10px; width:100%; height:44px; border-radius:999px; border:2px solid var(--line); background:var(--bg); color:var(--ink); font:inherit; padding:0 16px; }
 .row{ display:flex; gap:12px; align-items:center; width:100%; text-align:left; padding:10px 0; border-top:1px solid var(--line); }
+.list{ margin-top:6px; }
 .list .row:first-child{ border-top:0; }
 .row .pill{ width:28px; height:28px; }
 .row .info{ flex:1; min-width:0; }
@@ -220,7 +221,7 @@ header .bar::after{
 .actions{ display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
 .empty{ color:var(--muted); padding:6px 0; }
 
-/* Durchgänge */
+/* Archiv */
 .srow{ display:flex; align-items:center; gap:6px; padding:10px 0; border-top:1px solid var(--line); flex-wrap:wrap; }
 .srow:first-child{ border-top:0; }
 .srow .info{ flex:1 1 180px; min-width:0; }
@@ -230,10 +231,10 @@ header .bar::after{
 .srow .btn{ height:38px; padding:0 14px; font-size:12px; }
 .srow .lnk{ color:var(--muted); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; padding:8px 6px; }
 .srow .lnk.xl{ color:var(--accent); }
-.srow .lnk.arm{ color:#c8504e; }
+.srow .lnk.arm{ color:var(--danger); }
 div.f{ display:block; margin-top:12px; font-size:14px; color:var(--muted); }
 label.f{ display:block; margin-top:10px; font-size:14px; color:var(--muted); }
-label.f input{ display:block; width:100%; margin-top:4px; height:46px; border-radius:12px; border:2px solid var(--line); background:var(--bg); color:var(--ink); font:inherit; padding:0 12px; }
+label.f input{ display:block; width:100%; margin-top:4px; height:46px; border-radius:12px; border:2px solid var(--line); background:var(--bg); color:var(--ink); font:inherit; font-size:17px; padding:0 12px; }
 .foerder{ margin-top:14px; background:#fff; border-radius:16px; padding:12px; border:1px solid var(--line); }
 .foerder p{ margin:0 0 8px; font-size:12px; color:#5d7385; }
 .foerder img{ display:block; width:100%; height:auto; }
@@ -259,8 +260,12 @@ nav .badge{ display:inline-block; min-width:20px; padding:0 6px; border-radius:1
 body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
 .toast.show{ opacity:1; pointer-events:auto; }
 .toast button{ color:var(--tmk-hellblau); font-weight:700; font-size:13px; text-transform:uppercase; letter-spacing:.04em; padding:8px 10px; }
+section.in-l{ animation:inL .18s ease-out; }
+section.in-r{ animation:inR .18s ease-out; }
+@keyframes inL{ from{ transform:translateX(-28px); opacity:.35; } }
+@keyframes inR{ from{ transform:translateX(28px); opacity:.35; } }
 [hidden]{ display:none !important; }
-@media (prefers-reduced-motion: reduce){ *{ transition:none !important; } }
+@media (prefers-reduced-motion: reduce){ *{ transition:none !important; animation:none !important; } }
 </style>
 </head>
 <body>
@@ -269,9 +274,10 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
     <img class="logo" src="logo-tmk.svg" alt="Telemedizin Klaue">
     <button class="sess" id="sessBtn" aria-label="Erfassung wechseln">
       <b id="sessName">Keine Erfassung</b>
-      <span id="sessSub">Tippen, um einen anzulegen</span>
+      <span id="sessSub">Tippen, um eine anzulegen</span>
     </button>
   </div></header>
+  <div class="exphint warn" id="saveWarn" role="alert" hidden>Speichern auf diesem Gerät ist gerade nicht möglich (Speicher voll oder privater Modus). Bitte jetzt exportieren und nichts Neues erfassen.</div>
 
   <!-- Erfassen -->
   <section id="v-erfassen">
@@ -283,7 +289,7 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
     </div>
     <div class="idrow">
       <label class="field" id="idField">
-        <small>Tier-ID (Halsband, LOM oder Beschreibung)</small>
+        <small>Tier-ID: Nummer oder Beschreibung</small>
         <input id="tierId" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done">
       </label>
       <div class="mode" id="mode" role="group" aria-label="Tastatur">
@@ -296,7 +302,7 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
     <div class="scores" id="scores"></div>
     <button class="later" id="later">Später beurteilen</button>
     <label class="field notewrap">
-      <small>Bemerkung (optional, vor der Beurteilung eintragen)</small>
+      <small>Bemerkung (optional, vor dem Beurteilen)</small>
       <textarea id="note" rows="1" enterkeyhint="done"></textarea>
     </label>
 
@@ -336,7 +342,7 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
    </div>
   </section>
 
-  <!-- Tiere -->
+  <!-- Auswertung -->
   <section id="v-tiere" hidden>
     <div class="viewbar" id="viewBar" hidden>
       <div><span>Nur Ansicht, nichts wird verändert</span><b id="viewName"></b></div>
@@ -362,7 +368,7 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
       </div>
       <h2 id="listH" hidden>Tiere mit ID oder Bemerkung</h2>
       <input class="search" id="search" type="search" placeholder="Tier suchen" autocomplete="off">
-      <div class="list" id="list" style="margin-top:6px"></div>
+      <div class="list" id="list"></div>
     </div>
     <div class="panel">
       <h2>Excel-Export</h2>
@@ -374,7 +380,7 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
     </div>
   </section>
 
-  <!-- Durchgänge -->
+  <!-- Archiv -->
   <section id="v-durchgaenge" hidden>
     <div class="panel">
       <h2 id="formH">Neue Erfassung</h2>
@@ -384,7 +390,7 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
       <div class="f">Art der Erfassung
         <div class="seg" id="fKind">
           <button data-k="einzel" aria-pressed="true">Einzeltiere mit ID</button>
-          <button data-k="zaehl" aria-pressed="false">Zählung</button>
+          <button data-k="zaehl" aria-pressed="false">Zählung ohne ID</button>
         </div>
         <div class="hint" id="fKindHint"></div>
       </div>
@@ -407,7 +413,7 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
 
 <nav><div class="in">
   <button data-view="erfassen" aria-current="page">Erfassen</button>
-  <button data-view="tiere">Tiere<span class="badge" id="navBadge" hidden></span></button>
+  <button data-view="tiere">Auswertung<span class="badge" id="navBadge" hidden></span></button>
   <button data-view="durchgaenge">Archiv</button>
 </div></nav>
 
@@ -425,64 +431,83 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
   const $ = id => document.getElementById(id);
   const catLabel = s => s ? CAT[s].label : "nicht beurteilt";
   const pillCls = s => s || "open";
+  const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
-  // ---------- Speicher ----------
+  // ---------- Speicher (nur auf diesem Gerät, im Browser-Speicher) ----------
   function load(k, d){ try{ const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; }catch(e){ return d; } }
-  function save(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); }catch(e){} }
-  const state = {
-    durchgaenge: load("lt-durchgaenge", []),
-    tiere: load("lt-tiere", []),
-    current: load("lt-current", null)
-  };
-  function persist(){
-    save("lt-durchgaenge", state.durchgaenge); save("lt-tiere", state.tiere);
-    save("lt-current", state.current);
+  function save(k, v){ try{ localStorage.setItem(k, JSON.stringify(v)); return true; }catch(e){ return false; } }
+  const loadList = k => { const v = load(k, []); return Array.isArray(v) ? v.filter(x => x && x.id) : []; };
+  const state = {durchgaenge: [], tiere: [], current: null};
+  function readState(){
+    state.durchgaenge = loadList("lt-durchgaenge");
+    state.tiere = loadList("lt-tiere");
+    state.current = load("lt-current", null);
+    // Ältere Daten: Zeitpunkt der letzten Änderung je Erfassung nachtragen
+    state.durchgaenge.forEach(s => {
+      if(s.chg) return;
+      let m = s.u || s.c || 0;
+      state.tiere.forEach(r => { if(r.sid === s.id && (r.u || 0) > m) m = r.u; });
+      s.chg = m;
+    });
   }
+  function persist(){
+    const ok = [save("lt-durchgaenge", state.durchgaenge), save("lt-tiere", state.tiere), save("lt-current", state.current)].every(Boolean);
+    $("saveWarn").hidden = ok;
+    return ok;
+  }
+  readState();
+  // Gelöschtes beim Start endgültig entfernen (bis dahin bleibt es für „Rückgängig“ erhalten)
+  state.durchgaenge = state.durchgaenge.filter(s => !s.del);
+  state.tiere = state.tiere.filter(r => !r.del && state.durchgaenge.some(s => s.id === r.sid));
+
   const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,8);
   const live = arr => arr.filter(x => !x.del);
   const curSess = () => state.durchgaenge.find(s => s.id === state.current && !s.del) || null;
   const sessTiere = sid => live(state.tiere).filter(r => r.sid === sid);
-  const norm = s => String(s || "").trim().toLowerCase().replace(/\s+/g," ");
-  const natSort = (a,b) => (a.tier||a.note||"").localeCompare(b.tier||b.note||"", "de", {numeric:true, sensitivity:"base"});
-  const isCount = s => !!s && s.kind === "zaehl";
   const sessOf = r => state.durchgaenge.find(x => x.id === r.sid) || null;
+  const isCount = s => !!s && s.kind === "zaehl";
   const hasLabel = r => !!(r.tier || r.note);
-  // Ansicht: welche Erfassung der Reiter „Tiere“ zeigt (ohne sie aktiv zu machen)
+  const norm = s => String(s || "").trim().toLowerCase().replace(/\s+/g," ");
+  const clean = s => String(s || "").trim().replace(/\s+/g," ");
+  const natSort = (a,b) => (a.tier||a.note||"").localeCompare(b.tier||b.note||"", "de", {numeric:true, sensitivity:"base"});
+  const xlsName = s => "Lahmheit_" + s.farm + "_" + s.group + "_" + s.date;
+  // Ansicht: welche Erfassung der Reiter „Auswertung“ zeigt (ohne sie aktiv zu machen)
   let viewSid = null;
   const viewSess = () => (viewSid && state.durchgaenge.find(x => x.id === viewSid && !x.del)) || curSess();
   const viewing = () => { const v = viewSess(), c = curSess(); return !!v && (!c || v.id !== c.id); };
 
-  function touch(kind, item){
-    item.u = Date.now();
-    persist(); scheduleFlush();
+  // Nach jeder Änderung an einem Tier oder einer Erfassung aufrufen
+  function changed(rec){
+    const now = Date.now(), s = rec.sid ? sessOf(rec) : rec;
+    rec.u = now; if(s) s.chg = now;
+    persist(); updExportHint();
+  }
+
+  // Zweimal tippen zum Bestätigen: der erste Tipp stellt die Rückfrage, der zweite führt aus
+  function disarm(b){
+    if(!("armed" in b.dataset)) return;
+    clearTimeout(b._armT); b.textContent = b.dataset.armed; delete b.dataset.armed; b.classList.remove("arm");
+  }
+  function confirmTap(b, question, ms){
+    if("armed" in b.dataset){ disarm(b); return true; }
+    b.dataset.armed = b.textContent; b.textContent = question; b.classList.add("arm");
+    b._armT = setTimeout(() => disarm(b), ms || 3000);
+    return false;
   }
 
   // ---------- Export-Status ----------
-  function lastChange(sid){
-    let m = 0;
-    state.tiere.forEach(r => { if(r.sid === sid && (r.u||0) > m) m = r.u; });
-    return m;
-  }
   function exportState(s){
-    const n = sessTiere(s.id).length;
-    const ch = lastChange(s.id);
-    if(!ch && !n) return "empty";
-    if(!s.exp) return "never";
-    return ch > s.exp ? "changed" : "ok";
+    if(!s.exp) return sessTiere(s.id).length ? "never" : "empty";
+    return (s.chg || 0) > s.exp ? "changed" : "ok";
   }
-  const EXPTXT = {never:"noch nie exportiert", changed:"Änderungen seit Export", ok:"exportiert", empty:""};
-  function updSyncLabel(){
-    const s = viewSess();
-    const st = s ? exportState(s) : "empty";
-    const h = $("expHint");
-    if(h){
-      h.textContent = !s || st === "empty" ? "" : st === "ok"
-        ? "Zuletzt exportiert am " + fmtDT(s.exp) + "."
-        : (st === "never" ? "Diese Erfassung wurde noch nie exportiert." : "Seit dem letzten Export (" + fmtDT(s.exp) + ") gab es Änderungen.") + " Die Daten liegen nur auf diesem Handy.";
-      h.className = "exphint" + (st === "ok" ? "" : " warn");
-    }
+  const EXPTXT = {never:"noch nie exportiert", changed:"Änderungen seit Export"};
+  function updExportHint(){
+    const s = viewSess(), st = s ? exportState(s) : "empty", h = $("expHint");
+    h.textContent = st === "empty" ? "" : st === "ok"
+      ? "Zuletzt exportiert am " + fmtDT(s.exp) + "."
+      : (st === "never" ? "Diese Erfassung wurde noch nie exportiert." : "Seit dem letzten Export (" + fmtDT(s.exp) + ") gab es Änderungen.") + " Die Daten liegen nur auf diesem Gerät.";
+    h.className = "exphint" + (st === "ok" || st === "empty" ? "" : " warn");
   }
-  function scheduleFlush(){ updSyncLabel(); }
 
   // ---------- Erfassen ----------
   let editing = null;      // id des geöffneten Tiers
@@ -533,27 +558,22 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
   }
   function closeEdit(){
     editing = null; locked = false; noteTouched = false;
+    disarm($("editCancel")); disarm($("editDel"));
     idIn.value = ""; noteIn.value = ""; autoGrow(); renderEntry();
   }
   // Neues Tier: geöffnetes Tier schließen, ohne es neu zu beurteilen
   $("editCancel").addEventListener("pointerdown", e => e.preventDefault());
   $("editCancel").addEventListener("click", e => {
     const b = e.currentTarget, r = editRec();
-    const changed = r && (norm(idIn.value) !== norm(r.tier) || noteIn.value.trim() !== (r.note || ""));
-    if(changed && !b.classList.contains("arm")){
-      b.classList.add("arm"); b.textContent = "Änderungen verwerfen?";
-      setTimeout(() => { b.classList.remove("arm"); b.textContent = "Neues Tier"; }, 3000);
-      return;
-    }
-    b.classList.remove("arm"); b.textContent = "Neues Tier";
-    closeEdit(); idIn.focus();
+    const dirty = r && (norm(idIn.value) !== norm(r.tier) || noteIn.value.trim() !== (r.note || ""));
+    if(dirty && !confirmTap(b, "Änderungen verwerfen?")) return;
+    disarm(b); closeEdit(); idIn.focus();
   });
   $("editDel").addEventListener("click", e => {
     const b = e.currentTarget, r = editRec(); if(!r) return;
-    if(!b.classList.contains("arm")){ b.classList.add("arm"); b.textContent = "Wirklich löschen?"; setTimeout(()=>{ b.classList.remove("arm"); b.textContent = "Löschen"; }, 3000); return; }
-    b.classList.remove("arm"); b.textContent = "Löschen";
-    r.del = true; touch("tiere", r);
-    toast("„" + r.tier + "“ gelöscht", () => { r.del = false; touch("tiere", r); renderAll(); });
+    if(!confirmTap(b, "Wirklich löschen?")) return;
+    r.del = true; changed(r);
+    toast("„" + r.tier + "“ gelöscht", () => { r.del = false; changed(r); renderAll(); });
     closeEdit(); renderAll();
   });
 
@@ -598,7 +618,7 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
   function commit(score){
     const sess = curSess();
     if(!sess){ toast("Bitte zuerst eine Erfassung anlegen"); show("durchgaenge"); return; }
-    const tier = idIn.value.trim().replace(/\s+/g," ");
+    const tier = clean(idIn.value);
     if(!tier){ toast("Bitte eine Tier-ID eingeben"); idIn.focus(); return; }
     const note = noteIn.value.trim();
     let r = editRec();
@@ -609,15 +629,16 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
     if(r){
       const before = {tier:r.tier, score:r.score, note:r.note, t2:r.t2};
       Object.assign(r, {tier, score, note, t2: Date.now()});
-      touch("tiere", r);
+      changed(r);
       const msg = before.score !== score
         ? "„" + tier + "“: " + catLabel(before.score) + " → " + catLabel(score)
         : "„" + tier + "“ gespeichert";
-      toast(msg, () => { Object.assign(r, before); touch("tiere", r); renderAll(); });
+      toast(msg, () => { Object.assign(r, before); changed(r); renderAll(); });
     } else {
-      r = {id: uid(), sid: sess.id, tier, score, note, t: Date.now(), t2: Date.now()};
-      state.tiere.push(r); touch("tiere", r);
-      toast("„" + tier + "“: " + catLabel(score), () => { r.del = true; touch("tiere", r); renderAll(); });
+      const now = Date.now();
+      r = {id: uid(), sid: sess.id, tier, score, note, t: now, t2: now};
+      state.tiere.push(r); changed(r);
+      toast("„" + tier + "“: " + catLabel(score), () => { r.del = true; changed(r); renderAll(); });
     }
     if(navigator.vibrate) try{ navigator.vibrate(30); }catch(_){}
     closeEdit(); renderAll();
@@ -654,23 +675,25 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
     '<button class="zc '+k+'" data-s="'+k+'"><span class="num" id="zn-'+k+'">0</span><span>'+CAT[k].label+'</span></button>'
   ).join("");
   function attachRec(){ return attachId ? state.tiere.find(r => r.id === attachId && !r.del) || null : null; }
-  function closeAttach(){ attachId = null; aId.value = ""; aNote.value = ""; }
+  function closeAttach(){ attachId = null; aId.value = ""; aNote.value = ""; disarm($("aDel")); }
   function openAttach(id, fromList){
+    flushAttach();
     attachId = id; const r = attachRec(); if(!r){ attachId = null; return; }
     aId.value = r.tier || ""; aNote.value = r.note || "";
     renderCount();
     if(fromList) setTimeout(() => { try{ $("attach").scrollIntoView({block:"center"}); }catch(e){} }, 60);
   }
-  // Eingetipptes zum Tier übernehmen (auch wenn direkt weitergezählt wird)
+  // Eingetipptes zum Tier übernehmen (auch wenn direkt weitergezählt wird).
+  // Ergebnis: "" = nichts geändert, "saved" = gespeichert, "dup" = gespeichert, ID kommt aber schon vor
   function flushAttach(){
-    const r = attachRec(); if(!r) return false;
-    const tier = aId.value.trim().replace(/\s+/g," "), note = aNote.value.trim();
-    if(tier === (r.tier || "") && note === (r.note || "")) return false;
-    const clash = tier ? findByTier(r.sid, tier, r.id) : null;
-    Object.assign(r, {tier, note, t2: Date.now()}); touch("tiere", r);
-    if(clash) toast("„" + tier + "“ gibt es in dieser Erfassung schon, trotzdem gespeichert");
-    return true;
+    const r = attachRec(); if(!r) return "";
+    const tier = clean(aId.value), note = aNote.value.trim();
+    if(tier === (r.tier || "") && note === (r.note || "")) return "";
+    const dup = !!tier && !!findByTier(r.sid, tier, r.id);
+    Object.assign(r, {tier, note, t2: Date.now()}); changed(r);
+    return dup ? "dup" : "saved";
   }
+  const dupMsg = r => "„" + r.tier + "“ gibt es in dieser Erfassung schon, trotzdem gespeichert";
   $("aMode").addEventListener("pointerdown", e => e.preventDefault());
   $("aMode").addEventListener("click", e => {
     const b = e.target.closest("button"); if(!b) return;
@@ -680,47 +703,49 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
   $("zScores").addEventListener("click", e => {
     const b = e.target.closest(".zc"); if(!b) return;
     const sess = curSess(); if(!sess) return;
-    const saved = flushAttach();
+    const prev = attachRec(), st = flushAttach();
     const k = b.dataset.s, now = Date.now();
     const r = {id: uid(), sid: sess.id, tier: "", score: k, note: "", t: now, t2: now};
-    state.tiere.push(r); touch("tiere", r);
-    closeAttach();
-    if(k !== "ok") attachId = r.id;
+    state.tiere.push(r); changed(r);
+    closeAttach(); attachId = r.id;
     if(navigator.vibrate) try{ navigator.vibrate(25); }catch(_){}
     b.classList.remove("bump"); void b.offsetWidth; b.classList.add("bump");
-    if(saved) toast("Angaben zum vorigen Tier gespeichert");
+    if(st) toast(st === "dup" ? dupMsg(prev) : "Angaben zum vorigen Tier gespeichert");
     renderAll();
   });
   $("aCat").addEventListener("click", e => {
     const b = e.target.closest("button"), r = attachRec(); if(!b || !r || r.score === b.dataset.k) return;
-    const before = r.score; r.score = b.dataset.k; r.t2 = Date.now(); touch("tiere", r);
-    toast(catLabel(before) + " → " + catLabel(r.score), () => { r.score = before; touch("tiere", r); renderAll(); });
+    const before = r.score; r.score = b.dataset.k; r.t2 = Date.now(); changed(r);
+    toast(catLabel(before) + " → " + catLabel(r.score), () => { r.score = before; changed(r); renderAll(); });
     renderAll();
   });
   $("aSave").addEventListener("click", () => {
     const r = attachRec(); if(!r) return;
-    flushAttach();
-    toast(hasLabel(r) ? "„" + (r.tier || r.note) + "“ gespeichert" : "Gespeichert, ohne ID");
+    const st = flushAttach();
+    toast(st === "dup" ? dupMsg(r) : hasLabel(r) ? "„" + (r.tier || r.note) + "“ gespeichert" : "Gespeichert, ohne ID");
     closeAttach(); renderAll();
   });
-  $("aClose").addEventListener("click", () => { flushAttach(); closeAttach(); renderAll(); });
+  $("aClose").addEventListener("click", () => {
+    const r = attachRec(), st = flushAttach();
+    if(st === "dup") toast(dupMsg(r));
+    closeAttach(); renderAll();
+  });
   aId.addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); aNote.focus(); } });
   aNote.addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); $("aSave").click(); } });
   $("aDel").addEventListener("click", e => {
     const b = e.currentTarget, r = attachRec(); if(!r) return;
-    if(!b.classList.contains("arm")){ b.classList.add("arm"); b.textContent = "Wirklich entfernen?"; setTimeout(() => { b.classList.remove("arm"); b.textContent = "Tier entfernen"; }, 3000); return; }
-    b.classList.remove("arm"); b.textContent = "Tier entfernen";
-    r.del = true; touch("tiere", r); closeAttach();
-    toast("Tier entfernen: " + catLabel(r.score), () => { r.del = false; touch("tiere", r); renderAll(); });
+    if(!confirmTap(b, "Wirklich entfernen?")) return;
+    r.del = true; changed(r); closeAttach();
+    toast("Entfernt: " + catLabel(r.score) + (hasLabel(r) ? " („" + (r.tier || r.note) + "“)" : ""), () => { r.del = false; changed(r); renderAll(); });
     renderAll();
   });
   $("zUndo").addEventListener("click", () => {
     const sess = curSess(); if(!sess) return;
-    const last = sessTiere(sess.id).sort((a,b) => b.t - a.t)[0]; if(!last) return;
-    last.del = true; touch("tiere", last);
+    const recs = sessTiere(sess.id), last = recs[recs.length - 1]; if(!last) return;   // zuletzt gezähltes Tier
+    last.del = true; changed(last);
     if(attachId === last.id) closeAttach();
     toast("Zurückgenommen: " + catLabel(last.score) + (hasLabel(last) ? " („" + (last.tier || last.note) + "“)" : ""),
-      () => { last.del = false; touch("tiere", last); renderAll(); });
+      () => { last.del = false; changed(last); renderAll(); });
     renderAll();
   });
   function renderCount(){
@@ -756,7 +781,7 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
     const sess = viewSess(), cnt = isCount(sess), ro = viewing();
     const recs = sess ? sessTiere(sess.id) : [];
     $("viewBar").hidden = !ro;
-    if(ro) $("viewName").textContent = sess.farm + ", " + sess.group + ", " + fmtDate(sess.date) + (cnt ? " (Zählung)" : "");
+    if(ro) $("viewName").textContent = sess.farm + ", " + sess.group + ", " + fmtDate(sess.date) + (cnt ? " (Zählung ohne ID)" : "");
     $("kOpenBox").hidden = cnt; $("kpis").classList.toggle("three", cnt);
     $("listH").hidden = !cnt;
     const fOpen = document.querySelector('#filters [data-f="open"]');
@@ -804,7 +829,7 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
       const rs = sessTiere(s.id), c = {ok:0,sus:0,lame:0,open:0};
       rs.forEach(r => c[r.score || "open"]++);
       const j = c.ok + c.sus + c.lame;
-      return {"Betrieb": s.farm, "Gruppe": s.group, "Datum": fmtDate(s.date), "Art": isCount(s) ? "Zählung" : "Einzeltiere", "Tiere gesamt": rs.length,
+      return {"Betrieb": s.farm, "Gruppe": s.group, "Datum": fmtDate(s.date), "Art": isCount(s) ? "Zählung ohne ID" : "Einzeltiere mit ID", "Tiere gesamt": rs.length,
         "nicht lahm": c.ok, "unklar": c.sus, "lahm": c.lame, "nicht beurteilt": c.open,
         "Anteil lahm (%)": j ? Math.round(1000*c.lame/j)/10 : "", "Anteil unklar (%)": j ? Math.round(1000*c.sus/j)/10 : ""};
     });
@@ -816,7 +841,7 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
     const mime = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     const markDone = () => {
       const now = Date.now();
-      sessions.forEach(s => { s.exp = now; s.u = now; });
+      sessions.forEach(s => { s.exp = now; });
       persist(); renderAll();
     };
     let file = null;
@@ -834,16 +859,15 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
       markDone(); toast("Excel-Datei heruntergeladen");
     }catch(e){ toast("Export hat nicht geklappt. Bitte erneut versuchen."); }
   }
-  $("expCur").addEventListener("click", () => { const s = viewSess(); if(s) exportXlsx([s], "Lahmheit_" + s.farm + "_" + s.group + "_" + s.date); else toast("Keine Erfassung ausgewählt"); });
+  $("expCur").addEventListener("click", () => { const s = viewSess(); if(s) exportXlsx([s], xlsName(s)); else toast("Keine Erfassung ausgewählt"); });
   $("expAll2").addEventListener("click", () => $("expAll").click());
   $("expAll").addEventListener("click", () => exportXlsx(live(state.durchgaenge).sort((a,b)=>a.date.localeCompare(b.date) || a.c-b.c), "Lahmheit_alle_" + today()));
 
-  // ---------- Durchgänge ----------
+  // ---------- Archiv ----------
   let editSess = null;
   function today(){ const d = new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
   function fmtDate(iso){ if(!iso) return ""; const [y,m,d] = iso.split("-"); return d+"."+m+"."+y; }
   function fmtDT(t){ return t ? new Date(t).toLocaleString("de-DE",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}) : ""; }
-  function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 
   let fKind = "einzel";
   function setKind(k, locked){
@@ -867,19 +891,20 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
     save("lt-lastfarm", farm);
     if(editSess){
       const s = state.durchgaenge.find(x => x.id === editSess);
-      if(s){ Object.assign(s, {farm, group, date}); if(!sessTiere(s.id).length) s.kind = fKind; touch("durchgaenge", s); toast("Erfassung geändert"); }
+      if(s){ Object.assign(s, {farm, group, date}); if(!sessTiere(s.id).length) s.kind = fKind; changed(s); toast("Erfassung geändert"); }
       resetForm(); renderAll();
     } else {
       const s = {id: uid(), farm, group, date, kind: fKind, c: Date.now()};
-      state.durchgaenge.push(s); state.current = s.id; touch("durchgaenge", s);
-      closeEdit(); closeAttach(); resetForm(); renderAll(); show("erfassen"); toast(fKind === "zaehl" ? "Zählung angelegt" : "Erfassung angelegt");
+      flushAttach();
+      state.durchgaenge.push(s); state.current = s.id; changed(s);
+      closeEdit(); closeAttach(); resetForm(); renderAll(); show("erfassen"); toast(fKind === "zaehl" ? "Zählung ohne ID angelegt" : "Erfassung angelegt");
     }
   });
   $("sessList").addEventListener("click", e => {
     const b = e.target.closest("button"); if(!b) return;
     const s = state.durchgaenge.find(x => x.id === b.dataset.id); if(!s) return;
-    if(b.dataset.a === "xls"){ exportXlsx([s], "Lahmheit_" + s.farm + "_" + s.group + "_" + s.date); return; }
-    if(b.dataset.a === "use"){ state.current = s.id; persist(); closeEdit(); closeAttach(); renderAll(); show("erfassen"); }
+    if(b.dataset.a === "xls"){ exportXlsx([s], xlsName(s)); return; }
+    if(b.dataset.a === "use"){ flushAttach(); state.current = s.id; persist(); closeEdit(); closeAttach(); renderAll(); show("erfassen"); }
     if(b.dataset.a === "view"){ viewSid = s.id; show("tiere", true); }
     if(b.dataset.a === "edit"){
       editSess = s.id; $("formH").textContent = "Angaben ändern"; $("saveSess").textContent = "Änderungen speichern"; $("cancelSess").hidden = false;
@@ -887,9 +912,9 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
       setKind(isCount(s) ? "zaehl" : "einzel", sessTiere(s.id).length > 0); window.scrollTo(0,0);
     }
     if(b.dataset.a === "rm"){
-      if(!b.classList.contains("arm")){ b.classList.add("arm"); b.textContent = "Wirklich mit allen Tieren löschen?"; setTimeout(()=>{ b.classList.remove("arm"); b.textContent = "Löschen"; }, 3500); return; }
-      s.del = true; touch("durchgaenge", s);
-      sessTiere(s.id).forEach(r => { r.del = true; touch("tiere", r); });
+      if(!confirmTap(b, "Wirklich mit allen Tieren löschen?", 3500)) return;
+      sessTiere(s.id).forEach(r => { r.del = true; });
+      s.del = true; changed(s);
       if(state.current === s.id){ const n = live(state.durchgaenge).sort((a,b)=>b.c-a.c)[0]; state.current = n ? n.id : null; persist(); closeEdit(); closeAttach(); }
       if(editSess === s.id) resetForm();
       renderAll();
@@ -902,7 +927,7 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
       const cur = s.id === state.current; let st;
       const what = cnt ? rs.length + ' gezählt' + (rs.filter(hasLabel).length ? ', ' + rs.filter(hasLabel).length + ' mit ID' : '')
                        : rs.length + ' Tiere' + (open ? ', ' + open + ' offen' : '');
-      return '<div class="srow"><div class="info"><b>'+esc(s.farm)+', '+esc(s.group)+(cnt ? ' <span class="kindtag">Zählung</span>' : '')+'</b><span>'+fmtDate(s.date)+', '+what+((st=exportState(s))==="never"||st==="changed" ? ', <span class="warn">'+EXPTXT[st]+'</span>' : '')+'</span></div>' +
+      return '<div class="srow"><div class="info"><b>'+esc(s.farm)+', '+esc(s.group)+(cnt ? ' <span class="kindtag">Zählung ohne ID</span>' : '')+'</b><span>'+fmtDate(s.date)+', '+what+((st=exportState(s))==="never"||st==="changed" ? ', <span class="warn">'+EXPTXT[st]+'</span>' : '')+'</span></div>' +
         (cur ? '<span class="tag">aktiv</span>' : '<button class="btn ghost" data-a="use" data-id="'+s.id+'">Bearbeiten</button>') +
         '<button class="lnk xl" data-a="view" data-id="'+s.id+'">Ansehen</button>' +
         (rs.length ? '<button class="lnk xl" data-a="xls" data-id="'+s.id+'">Excel</button>' : '') +
@@ -911,28 +936,54 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
     }).join("") : '<div class="empty">Noch keine Erfassung. Leg oben die erste an.</div>';
     const s = curSess();
     $("sessName").textContent = s ? s.farm + ", " + s.group : "Keine Erfassung";
-    $("sessSub").textContent = s ? fmtDate(s.date) + (isCount(s) ? " · Zählung" : "") + " ▾" : "Tippen, um eine anzulegen";
+    $("sessSub").textContent = s ? fmtDate(s.date) + (isCount(s) ? " · Zählung ohne ID" : "") + " ▾" : "Tippen, um eine anzulegen";
   }
 
   // ---------- Navigation ----------
-  function show(v, keepView){
+  const VIEWS = ["erfassen","tiere","durchgaenge"];
+  let curView = "erfassen";
+  function show(v, keepView, dir){
     if(!keepView) viewSid = null;
-    if(v === "tiere"){ renderTiere(); updSyncLabel(); }
-    ["erfassen","tiere","durchgaenge"].forEach(x => $("v-"+x).hidden = x !== v);
+    const sec = $("v-"+v);
+    sec.classList.remove("in-l","in-r");
+    if(dir){ void sec.offsetWidth; sec.classList.add(dir > 0 ? "in-r" : "in-l"); }
+    curView = v;
+    if(v === "tiere"){ renderTiere(); updExportHint(); }
+    VIEWS.forEach(x => $("v-"+x).hidden = x !== v);
     document.querySelectorAll("nav button").forEach(b => b.dataset.view === v ? b.setAttribute("aria-current","page") : b.removeAttribute("aria-current"));
     window.scrollTo(0,0);
   }
   document.querySelector("nav").addEventListener("click", e => { const b = e.target.closest("button"); if(b) show(b.dataset.view); });
   $("sessBtn").addEventListener("click", () => show("durchgaenge"));
+  // Wischen nach links/rechts wechselt den Reiter (nicht beim Tippen und nicht in seitlich scrollenden Leisten)
+  let sw = null;
+  document.addEventListener("touchstart", e => {
+    if(e.touches.length !== 1 || document.body.classList.contains("typing")
+       || e.target.closest("input, textarea, .filters, .sugg, nav, .toast")){ sw = null; return; }
+    const x = e.touches[0].clientX;
+    if(x < 24 || x > window.innerWidth - 24){ sw = null; return; }   // Bildschirmrand gehört der Zurück-Geste des Browsers
+    sw = {x, y: e.touches[0].clientY, t: Date.now()};
+  }, {passive:true});
+  document.addEventListener("touchend", e => {
+    if(!sw) return;
+    const t = e.changedTouches[0], dx = t.clientX - sw.x, dy = t.clientY - sw.y, dt = Date.now() - sw.t;
+    sw = null;
+    if(dt > 700 || Math.abs(dx) < 70 || Math.abs(dx) < 2 * Math.abs(dy)) return;
+    const i = VIEWS.indexOf(curView) + (dx < 0 ? 1 : -1);
+    if(i < 0 || i >= VIEWS.length) return;
+    show(VIEWS[i], false, dx < 0 ? 1 : -1);
+  }, {passive:true});
 
-  // ---------- Toast ----------
-  let toastTimer = null, undoFn = null;
-  function toast(txt, undo){
-    $("toastTxt").textContent = txt; undoFn = undo || null; $("toastUndo").hidden = !undo;
+  // ---------- Hinweisleiste ----------
+  let toastTimer = null, toastFn = null;
+  function hideToast(){ clearTimeout(toastTimer); toastFn = null; $("toast").classList.remove("show"); }
+  function toast(txt, fn, label, ms){
+    $("toastTxt").textContent = txt; toastFn = fn || null;
+    $("toastUndo").hidden = !fn; $("toastUndo").textContent = label || "Rückgängig";
     $("toast").classList.add("show");
-    clearTimeout(toastTimer); toastTimer = setTimeout(() => $("toast").classList.remove("show"), 4500);
+    clearTimeout(toastTimer); toastTimer = setTimeout(hideToast, ms || 4500);
   }
-  $("toastUndo").addEventListener("click", () => { if(undoFn) undoFn(); undoFn = null; $("toast").classList.remove("show"); });
+  $("toastUndo").addEventListener("click", () => { const fn = toastFn; hideToast(); if(fn) fn(); });
 
   function renderAll(){
     if(editing && !editRec()){ editing = null; locked = false; }
@@ -940,7 +991,7 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
     const cnt = isCount(curSess());
     $("einzelUI").hidden = cnt; $("zaehlUI").hidden = !cnt;
     renderCount();
-    renderSessions(); renderEntry(); renderLists(); renderTiere(); updSyncLabel();
+    renderSessions(); renderEntry(); renderLists(); renderTiere(); updExportHint();
   }
 
   document.addEventListener("focusin", e => { if(e.target.matches("input, textarea")) document.body.classList.add("typing"); });
@@ -950,8 +1001,23 @@ body.typing .toast{ bottom:auto; top:calc(env(safe-area-inset-top,0px) + 8px); }
   }, 50));
   applyMode(); resetForm(); renderAll();
   if(!curSess()) show("durchgaenge");
-  if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(()=>{});
-  if("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js").catch(()=>{});
+
+  // Wurde in einem anderen Fenster derselben App etwas geändert, den Stand von dort übernehmen
+  window.addEventListener("storage", e => {
+    if(e.key && !e.key.startsWith("lt-")) return;
+    readState(); numMode = load("lt-nummode", false);
+    editing = null; locked = false; attachId = null; hideToast();
+    applyMode(); renderAll();
+  });
+  if(navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+  // Offline-Betrieb; sobald eine neue Fassung bereitliegt, zum Neuladen anbieten
+  if("serviceWorker" in navigator && location.protocol === "https:"){
+    const hadWorker = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      if(hadWorker) toast("Neue Version der App liegt bereit", () => location.reload(), "Neu laden", 20000);
+    });
+  }
 })();
 </script>
 </body>
