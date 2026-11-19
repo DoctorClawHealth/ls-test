@@ -87,12 +87,20 @@ header .bar::after{
 #saveWarn{ margin-top:10px; font-weight:700; }
 .srow .warn{ color:var(--danger); font-weight:700; }
 
+/* Tierleiste: die letzten Tiere, immer über der Tastatur sichtbar */
+.strip{ display:flex; gap:6px; overflow-x:auto; padding:8px 0 2px; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+.strip::-webkit-scrollbar{ display:none; }
+.strip .chip{ flex:none; max-width:9.5em; height:38px; font-weight:700; }
+.strip .chip.sel{ border:2px solid var(--ink); background:var(--key); }
+.strip .chip.openchip.sel{ border-style:dashed; }
+.strip .lbl{ flex:none; align-self:center; font-size:12px; color:var(--muted); padding-right:2px; }
+
 /* Erfassen */
 .editbar{
   display:flex; align-items:center; gap:6px; margin-top:8px; padding:5px 5px 5px 12px;
   background:var(--tmk-dunkelblau); color:#fff; border-radius:16px; font-size:15px;
 }
-.editbar span{ flex:1; min-width:0; }
+.editbar span{ flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .editbar button{ color:#fff; padding:6px 8px; font-weight:700; font-size:13px; text-transform:uppercase; letter-spacing:.03em; }
 .editbar button.arm{ color:#ffc9c8; }
 .editbar button.new{ background:var(--cta); color:var(--cta-ink); border-radius:999px; padding:8px 12px; }
@@ -105,6 +113,9 @@ header .bar::after{
 #note{ font-size:17px; min-height:26px; }
 .field:focus-within{ border-color:var(--accent); }
 .field.known{ border-color:var(--sus); }
+.addbtn{ width:60px; flex:none; border-radius:14px; border:2px dashed var(--open); background:var(--surface); display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:1; }
+.addbtn b{ font-size:26px; font-weight:400; }
+.addbtn small{ font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.03em; color:var(--muted); margin-top:2px; }
 .mode{ width:64px; display:flex; flex-direction:column; border:2px solid var(--line); border-radius:14px; overflow:hidden; background:var(--surface); }
 .mode button{ flex:1; font-weight:700; font-size:15px; color:var(--muted); }
 .mode button + button{ border-top:2px solid var(--line); }
@@ -276,7 +287,9 @@ section.in-r{ animation:inR .18s ease-out; }
       <b id="sessName">Keine Erfassung</b>
       <span id="sessSub">Tippen, um eine anzulegen</span>
     </button>
-  </div></header>
+  </div>
+  <div class="strip" id="strip" hidden></div>
+  </header>
   <div class="exphint warn" id="saveWarn" role="alert" hidden>Speichern auf diesem Gerät ist gerade nicht möglich (Speicher voll oder privater Modus). Bitte jetzt exportieren und nichts Neues erfassen.</div>
 
   <!-- Erfassen -->
@@ -289,9 +302,10 @@ section.in-r{ animation:inR .18s ease-out; }
     </div>
     <div class="idrow">
       <label class="field" id="idField">
-        <small>Tier-ID: Nummer oder Beschreibung</small>
+        <small>Tier-ID oder Beschreibung</small>
         <input id="tierId" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done">
       </label>
+      <button class="addbtn" id="addBtn" aria-label="Tier merken, später beurteilen"><b>+</b><small>merken</small></button>
       <div class="mode" id="mode" role="group" aria-label="Tastatur">
         <button data-m="text" aria-pressed="true" aria-label="Buchstaben-Tastatur">abc</button>
         <button data-m="num" aria-pressed="false" aria-label="Zahlen-Tastatur">123</button>
@@ -300,7 +314,6 @@ section.in-r{ animation:inR .18s ease-out; }
     <div class="sugg" id="sugg"></div>
     <div class="hint" id="hint"></div>
     <div class="scores" id="scores"></div>
-    <button class="later" id="later">Später beurteilen</button>
     <label class="field notewrap">
       <small>Bemerkung (optional, vor dem Beurteilen)</small>
       <textarea id="note" rows="1" enterkeyhint="done"></textarea>
@@ -309,10 +322,6 @@ section.in-r{ animation:inR .18s ease-out; }
     <div class="block" id="openBlock" hidden>
       <h2 id="openH">Noch offen</h2>
       <div class="chips" id="openList"></div>
-    </div>
-    <div class="block">
-      <h2 id="recentH">Zuletzt erfasst</h2>
-      <div class="chips" id="recent"></div>
     </div>
    </div>
 
@@ -549,9 +558,47 @@ section.in-r{ animation:inR .18s ease-out; }
   }
   function editRec(){ return editing ? state.tiere.find(r => r.id === editing && !r.del) || null : null; }
 
+  // Änderungen an ID oder Bemerkung des geöffneten Tiers übernehmen (Beurteilung bleibt)
+  function saveEdits(){
+    const r = editRec(); if(!r) return false;
+    let tier = clean(idIn.value); const note = noteIn.value.trim();
+    if(!tier) tier = r.tier;
+    if(norm(tier) === norm(r.tier) && tier !== r.tier && !locked) tier = r.tier;
+    if(tier === r.tier && note === (r.note || "")) return false;
+    if(tier !== r.tier && findByTier(r.sid, tier, r.id)){
+      toast("„" + tier + "“ gibt es in dieser Erfassung schon, ID nicht geändert");
+      tier = r.tier;
+      if(note === (r.note || "")) return false;
+    }
+    const before = {tier: r.tier, note: r.note, t2: r.t2};
+    Object.assign(r, {tier, note, t2: Date.now()}); changed(r);
+    toast("„" + tier + "“ gespeichert", () => { Object.assign(r, before); changed(r); renderAll(); });
+    return true;
+  }
+  // Tier merken (noch nicht beurteilt) oder geöffnetes Tier speichern und schließen
+  function merk(){
+    const sess = curSess();
+    if(!sess){ toast("Bitte zuerst eine Erfassung anlegen"); show("durchgaenge"); return; }
+    if(editRec()){ saveEdits(); closeEdit(); renderAll(); idIn.focus(); return; }
+    const tier = clean(idIn.value);
+    if(!tier){ toast("Bitte eine Tier-ID eingeben"); idIn.focus(); return; }
+    const now = Date.now();
+    const r = {id: uid(), sid: sess.id, tier, score: null, note: noteIn.value.trim(), t: now, t2: now};
+    state.tiere.push(r); changed(r);
+    toast("„" + tier + "“ gemerkt", () => { r.del = true; changed(r); renderAll(); });
+    closeEdit(); renderAll(); idIn.focus();
+  }
+  // Vor dem Wechsel zu einem anderen Tier: Eingetipptes nicht verlieren
+  function leaveCurrent(){
+    if(isCount(curSess())) return;
+    if(editRec()) saveEdits();
+    else if(clean(idIn.value)) merk();
+  }
+
   function openRecord(id){
     const r = state.tiere.find(x => x.id === id && !x.del); if(!r) return;
     if(isCount(sessOf(r))){ show("erfassen"); openAttach(r.id, true); return; }
+    if(r.id !== editing) leaveCurrent();
     editing = r.id; locked = true; noteTouched = true;
     idIn.value = r.tier; noteIn.value = r.note || "";
     show("erfassen"); renderEntry(); autoGrow();
@@ -561,14 +608,11 @@ section.in-r{ animation:inR .18s ease-out; }
     disarm($("editCancel")); disarm($("editDel"));
     idIn.value = ""; noteIn.value = ""; autoGrow(); renderEntry();
   }
-  // Neues Tier: geöffnetes Tier schließen, ohne es neu zu beurteilen
+  // Neues Tier: Änderungen am geöffneten Tier übernehmen und Feld freimachen
   $("editCancel").addEventListener("pointerdown", e => e.preventDefault());
-  $("editCancel").addEventListener("click", e => {
-    const b = e.currentTarget, r = editRec();
-    const dirty = r && (norm(idIn.value) !== norm(r.tier) || noteIn.value.trim() !== (r.note || ""));
-    if(dirty && !confirmTap(b, "Änderungen verwerfen?")) return;
-    disarm(b); closeEdit(); idIn.focus();
-  });
+  $("editCancel").addEventListener("click", () => { saveEdits(); closeEdit(); renderAll(); idIn.focus(); });
+  $("addBtn").addEventListener("pointerdown", e => e.preventDefault());
+  $("addBtn").addEventListener("click", merk);
   $("editDel").addEventListener("click", e => {
     const b = e.currentTarget, r = editRec(); if(!r) return;
     if(!confirmTap(b, "Wirklich löschen?")) return;
@@ -588,24 +632,30 @@ section.in-r{ animation:inR .18s ease-out; }
     }
     renderEntry();
   });
-  idIn.addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); idIn.blur(); } });
+  idIn.addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); merk(); } });
   noteIn.addEventListener("input", () => { noteTouched = true; autoGrow(); });
-  noteIn.addEventListener("keydown", e => { if(e.key === "Enter" && !e.shiftKey){ e.preventDefault(); noteIn.blur(); } });
+  noteIn.addEventListener("keydown", e => {
+    if(e.key !== "Enter" || e.shiftKey) return;
+    e.preventDefault();
+    if(editRec() || clean(idIn.value)) merk(); else noteIn.blur();
+  });
   function autoGrow(){ noteIn.style.height = "auto"; noteIn.style.height = Math.min(noteIn.scrollHeight, 140) + "px"; }
 
   function renderEntry(){
     const sess = curSess(), r = editRec();
     $("editBar").hidden = !r;
-    if(r) $("editTxt").textContent = locked ? "„" + r.tier + "“ geöffnet: " + catLabel(r.score) : "Schon erfasst: " + catLabel(r.score);
+    if(r) $("editTxt").textContent = (locked ? "„" + r.tier + "“: " : "Schon erfasst: ") + catLabel(r.score);
     $("idField").classList.toggle("known", !!r && !locked);
     let hint = "";
     if(!sess) hint = "Zuerst eine Erfassung anlegen.";
     else if(r && !locked) hint = "Neue Beurteilung ersetzt die bisherige.";
-    else if(r && locked && norm(idIn.value) !== norm(r.tier)) hint = "Tier-ID wird beim Speichern geändert.";
+    else if(r && locked && norm(idIn.value) !== norm(r.tier)) hint = "Neue Tier-ID wird beim Verlassen übernommen.";
     $("hint").textContent = hint;
     document.querySelectorAll(".sc").forEach(b => b.classList.toggle("cur", !!r && r.score === b.dataset.s));
-    $("later").classList.toggle("cur", !!r && !r.score);
-    $("later").textContent = r && !r.score ? "Bleibt offen (speichern)" : "Später beurteilen";
+    $("addBtn").querySelector("small").textContent = r ? "fertig" : "merken";
+    $("addBtn").setAttribute("aria-label", r ? "Änderungen übernehmen, neues Tier" : "Tier merken, später beurteilen");
+    $("addBtn").querySelector("b").textContent = r ? "✓" : "+";
+    renderStrip();
     // Vorschläge
     const q = norm(idIn.value);
     let sugg = [];
@@ -645,7 +695,6 @@ section.in-r{ animation:inR .18s ease-out; }
     idIn.focus();
   }
   $("scores").addEventListener("click", e => { const b = e.target.closest(".sc"); if(b) commit(b.dataset.s); });
-  $("later").addEventListener("click", () => commit(null));
 
   document.addEventListener("click", e => {
     const b = e.target.closest("[data-open]"); if(b) openRecord(b.dataset.open);
@@ -662,10 +711,20 @@ section.in-r{ animation:inR .18s ease-out; }
     $("openBlock").hidden = !open.length;
     $("openH").textContent = "Noch offen (" + open.length + "), zum Beurteilen antippen";
     $("openList").innerHTML = open.map(chip).join("");
-    const done = recs.filter(r => r.score).sort((a,b)=>(b.t2||b.t)-(a.t2||a.t));
-    $("recentH").textContent = recs.length ? "Zuletzt beurteilt, " + recs.length + " Tiere in der Erfassung" : "Noch keine Tiere in dieser Erfassung";
-    $("recent").innerHTML = done.slice(0,8).map(chip).join("");
     $("navBadge").hidden = !open.length || isCount(sess); $("navBadge").textContent = open.length;
+  }
+
+  // Tierleiste: die sechs zuletzt erfassten oder bearbeiteten Tiere, neuestes links
+  function renderStrip(){
+    const sess = curSess(), el = $("strip");
+    const on = !!sess && !isCount(sess) && curView === "erfassen";
+    const recs = on ? sessTiere(sess.id).sort((a,b) => (b.t2||b.t) - (a.t2||a.t)).slice(0, 6) : [];
+    el.hidden = !recs.length;
+    if(!recs.length){ el.innerHTML = ""; return; }
+    el.innerHTML = '<span class="lbl">Zuletzt:</span>' + recs.map(r =>
+      '<button class="chip'+(r.score?'':' openchip')+(r.id === editing ? ' sel' : '')+'" data-open="'+r.id+'">' +
+      (r.score ? '<i class="pill '+r.score+'"></i>' : '') + '<span>'+esc(r.tier)+'</span></button>').join("");
+    el.scrollLeft = 0;
   }
 
   // ---------- Zählung ----------
@@ -936,7 +995,8 @@ section.in-r{ animation:inR .18s ease-out; }
     }).join("") : '<div class="empty">Noch keine Erfassung. Leg oben die erste an.</div>';
     const s = curSess();
     $("sessName").textContent = s ? s.farm + ", " + s.group : "Keine Erfassung";
-    $("sessSub").textContent = s ? fmtDate(s.date) + (isCount(s) ? " · Zählung ohne ID" : "") + " ▾" : "Tippen, um eine anzulegen";
+    const n = s ? sessTiere(s.id).length : 0;
+    $("sessSub").textContent = s ? fmtDate(s.date) + (isCount(s) ? " · Zählung ohne ID" : " · " + n + (n === 1 ? " Tier" : " Tiere")) + " ▾" : "Tippen, um eine anzulegen";
   }
 
   // ---------- Navigation ----------
@@ -944,6 +1004,7 @@ section.in-r{ animation:inR .18s ease-out; }
   let curView = "erfassen";
   function show(v, keepView, dir){
     if(!keepView) viewSid = null;
+    if(v !== "erfassen" && curView === "erfassen" && editRec()){ saveEdits(); closeEdit(); }
     const sec = $("v-"+v);
     sec.classList.remove("in-l","in-r");
     if(dir){ void sec.offsetWidth; sec.classList.add(dir > 0 ? "in-r" : "in-l"); }
@@ -952,6 +1013,7 @@ section.in-r{ animation:inR .18s ease-out; }
     VIEWS.forEach(x => $("v-"+x).hidden = x !== v);
     document.querySelectorAll("nav button").forEach(b => b.dataset.view === v ? b.setAttribute("aria-current","page") : b.removeAttribute("aria-current"));
     window.scrollTo(0,0);
+    renderStrip();
   }
   document.querySelector("nav").addEventListener("click", e => { const b = e.target.closest("button"); if(b) show(b.dataset.view); });
   $("sessBtn").addEventListener("click", () => show("durchgaenge"));
@@ -959,7 +1021,7 @@ section.in-r{ animation:inR .18s ease-out; }
   let sw = null;
   document.addEventListener("touchstart", e => {
     if(e.touches.length !== 1 || document.body.classList.contains("typing")
-       || e.target.closest("input, textarea, .filters, .sugg, nav, .toast")){ sw = null; return; }
+       || e.target.closest("input, textarea, .filters, .sugg, .strip, nav, .toast")){ sw = null; return; }
     const x = e.touches[0].clientX;
     if(x < 24 || x > window.innerWidth - 24){ sw = null; return; }   // Bildschirmrand gehört der Zurück-Geste des Browsers
     sw = {x, y: e.touches[0].clientY, t: Date.now()};
