@@ -1,5 +1,5 @@
 // Offline-Betrieb für Praxis Score. Bei jeder Änderung an der App VERSION erhöhen.
-const VERSION = "tmk-lahmheit-v15";
+const VERSION = "tmk-lahmheit-v16";
 const FILES = ["./", "index.html", "xlsx.full.min.js", "manifest.webmanifest", "icon-192.png", "icon-512.png", "apple-touch-icon.png", "logo-tmk.svg", "bogen.svg", "asap-latin.woff2"];
 const OPTIONAL = ["foerderleiste.jpg"];
 // Beim Einrichten immer frisch vom Server holen, nicht aus dem Zwischenspeicher des Browsers

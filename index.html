@@ -49,7 +49,7 @@
 :root{ box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px); }
 *,*::before,*::after{ box-sizing:inherit; }
 html{ scroll-padding-top:env(safe-area-inset-top,0px); -webkit-text-size-adjust:100%; text-size-adjust:100%; }
-html{ overflow-x:hidden; }
+html{ overflow-x:clip; }
 input, textarea, select{ min-width:0; max-width:100%; }
 .field, .idrow > *, .attach .row2 > *, .viewbar > div{ min-width:0; }
 input[type="date"]{ -webkit-appearance:none; appearance:none; display:block; min-height:46px; line-height:42px; text-align:left; }
@@ -235,9 +235,10 @@ header .bar::after{
 /* Archiv */
 .srow{ display:flex; align-items:center; gap:6px; padding:10px 0; border-top:1px solid var(--line); flex-wrap:wrap; }
 .srow:first-child{ border-top:0; }
-.srow .info{ flex:1 1 180px; min-width:0; }
+.srow .info{ flex:1 1 100%; min-width:0; margin-bottom:2px; }
 .srow .info b{ display:block; overflow-wrap:anywhere; }
 .srow .info span{ color:var(--muted); font-size:14px; }
+.srow .btn{ margin-right:4px; }
 .srow .tag{ color:var(--accent); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; padding:0 6px; }
 .srow .btn{ height:38px; padding:0 14px; font-size:12px; }
 .srow .lnk{ color:var(--muted); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; padding:8px 6px; }
@@ -393,7 +394,8 @@ section.in-r{ animation:inR .18s ease-out; }
   <section id="v-durchgaenge" hidden>
     <div class="panel">
       <h2 id="formH">Neue Erfassung</h2>
-      <label class="f">Betrieb<input id="fFarm" autocomplete="off"></label>
+      <label class="f">Betrieb<input id="fFarm" autocomplete="off" list="farmList"></label>
+      <datalist id="farmList"></datalist>
       <label class="f">Gruppe<input id="fGroup" autocomplete="off" placeholder="z. B. Laktierende, Stall Nord"></label>
       <label class="f">Datum<input id="fDate" type="date"></label>
       <div class="f">Art der Erfassung
@@ -714,11 +716,11 @@ section.in-r{ animation:inR .18s ease-out; }
     $("navBadge").hidden = !open.length || isCount(sess); $("navBadge").textContent = open.length;
   }
 
-  // Tierleiste: die sechs zuletzt erfassten oder bearbeiteten Tiere, neuestes links
+  // Tierleiste: die 15 zuletzt erfassten oder bearbeiteten Tiere, neuestes links (seitlich wischbar)
   function renderStrip(){
     const sess = curSess(), el = $("strip");
     const on = !!sess && !isCount(sess) && curView === "erfassen";
-    const recs = on ? sessTiere(sess.id).sort((a,b) => (b.t2||b.t) - (a.t2||a.t)).slice(0, 6) : [];
+    const recs = on ? sessTiere(sess.id).sort((a,b) => (b.t2||b.t) - (a.t2||a.t)).slice(0, 15) : [];
     el.hidden = !recs.length;
     if(!recs.length){ el.innerHTML = ""; return; }
     el.innerHTML = '<span class="lbl">Zuletzt:</span>' + recs.map(r =>
@@ -940,14 +942,15 @@ section.in-r{ animation:inR .18s ease-out; }
   function resetForm(){
     editSess = null; setKind("einzel");
     $("formH").textContent = "Neue Erfassung"; $("saveSess").textContent = "Erfassung anlegen"; $("cancelSess").hidden = true;
-    $("fFarm").value = load("lt-lastfarm",""); $("fGroup").value = ""; $("fDate").value = today();
+    $("fFarm").value = "";
+    const farms = [...new Set(live(state.durchgaenge).sort((a,b) => b.c - a.c).map(x => x.farm))].slice(0, 30);
+    $("farmList").innerHTML = farms.map(f => '<option value="'+esc(f)+'">').join(""); $("fGroup").value = ""; $("fDate").value = today();
   }
   $("cancelSess").addEventListener("click", resetForm);
   $("saveSess").addEventListener("click", () => {
     const farm = $("fFarm").value.trim(), group = $("fGroup").value.trim(), date = $("fDate").value || today();
     if(!farm){ $("fFarm").focus(); toast("Bitte den Betrieb eintragen"); return; }
     if(!group){ $("fGroup").focus(); toast("Bitte die Gruppe eintragen"); return; }
-    save("lt-lastfarm", farm);
     if(editSess){
       const s = state.durchgaenge.find(x => x.id === editSess);
       if(s){ Object.assign(s, {farm, group, date}); if(!sessTiere(s.id).length) s.kind = fKind; changed(s); toast("Erfassung geändert"); }
@@ -1057,9 +1060,22 @@ section.in-r{ animation:inR .18s ease-out; }
   }
 
   document.addEventListener("focusin", e => { if(e.target.matches("input, textarea")) document.body.classList.add("typing"); });
+  // iOS (v. a. als App vom Home-Bildschirm) lässt nach dem Schließen der Tastatur die untere Leiste
+  // und die Kopfleiste manchmal verschoben stehen. Ein kurzer Ruck beim Scrollen richtet die Ansicht neu aus.
+  function realign(){
+    const y = window.scrollY;
+    window.scrollTo(0, y + 1);
+    requestAnimationFrame(() => window.scrollTo(0, y));
+  }
+  let vvH = window.visualViewport ? window.visualViewport.height : 0;
+  if(window.visualViewport) window.visualViewport.addEventListener("resize", () => {
+    const h = window.visualViewport.height;
+    if(h > vvH + 80) setTimeout(realign, 60);   // Tastatur ist zugegangen
+    vvH = h;
+  });
   document.addEventListener("focusout", () => setTimeout(() => {
     const a = document.activeElement;
-    if(!a || !a.matches || !a.matches("input, textarea")) document.body.classList.remove("typing");
+    if(!a || !a.matches || !a.matches("input, textarea")){ document.body.classList.remove("typing"); setTimeout(realign, 250); }
   }, 50));
   applyMode(); resetForm(); renderAll();
   if(!curSess()) show("durchgaenge");
